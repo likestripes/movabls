@@ -251,9 +251,11 @@ class Movabls_Session {
      */
     private static function db_link() {
 
-        $mvsdb = new mysqli('localhost','root','h4ppyf4rmers','movabls_system');
-        if (mysqli_connect_errno())
-            throw new Exception("Database connection failed: ".mysqli_connect_error());
+        $mvsdb = new mysqli('localhost','dbuser','password','mvs_database');
+        if (mysqli_connect_errno()) {
+            printf("Connect failed: %s\n", mysqli_connect_error());
+            exit();
+        }
         return $mvsdb;
 
     }

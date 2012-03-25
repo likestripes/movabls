@@ -23,9 +23,7 @@ class Movabls_Run {
             register_shutdown_function(array($this,'shutdown_handler'));
 
             //Get database handle
-            $this->mvsdb = new mysqli('localhost','root','h4ppyf4rmers','movabls_system');
-            if (mysqli_connect_errno())
-                throw new Exception("Database connection failed: ".mysqli_connect_error());
+            $this->mvsdb = new mysqli('localhost','dbuser','password','mvs_database');
 
             //Get session
             Movabls_Session::get_session($this->mvsdb);
@@ -68,10 +66,16 @@ class Movabls_Run {
         //We're about to execute user code, so we need to lock globals now that we're done with it.
         $GLOBALS->lock();
         
-        if (!empty($place->interface_GUID))
+       /* if (!empty($place->interface_GUID))
             $this->get_interface($place->interface_GUID);
         else
-            $place->interface_GUID = null;
+            $place->interface_GUID = null; */
+			
+		if (empty($place->interface_GUID))
+			$place->interface_GUID = "inherit"; 
+			
+		$this->get_interface($place->interface_GUID);
+			
         $this->select_movabls($place->media_GUID);
         
         //Add to stack and run
@@ -129,48 +133,38 @@ class Movabls_Run {
         else
             $this->add_place($place);
 
-        if (!self::check_permission($place->place_GUID, $this->mvsdb))
-            throw new Exception('You do not have permission to access this place',403);
+        if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb)){
+		
+		
+		
+		if (!$GLOBALS->_USER['session_id']) {
 
+	if (!$GLOBALS->_POST['email'] || !$GLOBALS->_POST['password']) {
+   header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
+//  echo "dsfsd";
+   die();
+   }else{
+   
+   Movabls_Users::login('email',$GLOBALS->_POST['email'],$GLOBALS->_POST['password']);
+   //header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
+   die();
+   }
+   }else{
+		   header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
+		//echo "dsf";
+		die();
+           // throw new Exception('You do not have permission to access this place',403);
+
+}
+}
+			
+			
         if ($place->https && !$GLOBALS->_SERVER['HTTPS']) {
             header('Location: https://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
             die();
         }
         
         return $place;
-
-    }
-
-    /**
-     * Check whether the current user has access to a place
-     * @param string $place_guid
-     * @param mysqli handle $mvsdb
-     * @return boolean
-     */
-    private static function check_permission($place_guid,$mvsdb = null) {
-
-        if (in_array(1,$GLOBALS->_USER['groups']))
-            return true;
-
-        if (empty($GLOBALS->_USER['groups']))
-            return false;
-
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
-
-        $place_guid = $mvsdb->real_escape_string($place_guid);
-        foreach ($GLOBALS->_USER['groups'] as $k => $group)
-            $groups[$k] = $mvsdb->real_escape_string($group);
-        $groups = "'".implode("','",$groups)."'";
-
-        $results = $mvsdb->query("SELECT permission_id FROM mvs_permissions
-                                WHERE place_guid $guid
-                                AND group_id IN ($groups)");
-
-        if ($results->num_rows == 0)
-            return false;
-        else
-            return true;
 
     }
 
@@ -183,7 +177,7 @@ class Movabls_Run {
      * @return array = key/value pairings
      */
     private function extract_url_variables($pattern,$url,$inputs) {
-
+	
         $pattern = '/'.preg_quote($pattern,'/').'/';
         $pattern = str_replace('%','(.*)?',$pattern);
         preg_match_all($pattern,$url,$matches);
@@ -224,21 +218,44 @@ class Movabls_Run {
      * @param <string> $interface_GUID
      */
     private function get_interface($interface_GUID) {
+	
 
-        if (!isset($this->interfaces->$interface_GUID)) {
-            $interface_GUID = $this->mvsdb->real_escape_string($interface_GUID);
-            $result = $this->mvsdb->query("SELECT content FROM mvs_interfaces WHERE interface_GUID = '$interface_GUID'");
-            $interface = $result->fetch_object();
-            $result->free();
-            if (empty($interface))
-                return null;
-                
-            $interface = json_decode($interface->content);
-            if ($interface === null)
-                throw new Exception("Invalid Interface JSON - $interface_GUID",500);
-            $this->interfaces->$interface_GUID = $interface;
-            $this->get_tags($interface);
-        }
+		$interface->mvs_server->expression='$GLOBALS->_SERVER;';	
+		$interface->mvs_place->expression='$GLOBALS->_PLACE;';	
+		$interface->mvs_user->expression='$GLOBALS->_USER;';
+		
+		if ($interface_GUID =="inherit"){
+		$this->interfaces->$interface_GUID = $interface;
+				$this->get_tags($interface);
+
+		}else{
+		
+		        if (!isset($this->interfaces->$interface_GUID)) {
+				$interface_GUID = $this->mvsdb->real_escape_string($interface_GUID);
+				$result = $this->mvsdb->query("SELECT content FROM mvs_interfaces WHERE interface_GUID = '$interface_GUID'");
+				$interface_obj = $result->fetch_object();
+				$result->free();
+				if (empty($interface_obj))
+					return null;
+					
+				$interface_ar = json_decode($interface_obj->content);
+				//print_r( $interface_ar);
+				foreach ($interface_ar as $k=>$v){
+
+				foreach ($v as $k2=>$v2)
+						$interface->$k->$k2=$v2;
+				
+				}
+
+				//print_r($interface);
+				$this->interfaces->$interface_GUID = $interface;
+				$this->get_tags($interface);
+			}
+		
+		}
+
+		
+			//print_r($interface);
 
     }
 
@@ -247,7 +264,7 @@ class Movabls_Run {
      * @param <stdClass> $tags
      */
     private function get_tags($tags) {
-        
+
         if (empty($tags))
             return false;
 
@@ -294,7 +311,7 @@ class Movabls_Run {
         
         while ($row = $result->fetch_object()) {
 
-            $content_mime_type = explode("/",$row->mimetype);
+            $content_mime_type = split("/",$row->mimetype);
 
             if ($content_mime_type[0] != "text")
                 $row->content = (binary)$row->content;
@@ -315,7 +332,7 @@ class Movabls_Run {
                 
             $renderer = new Movabls_MediaRender($row->content,$row->inputs);
 
-            if ($content_mime_type[0] == "text")
+            if (($content_mime_type[0] == "text") || (($content_mime_type[0] == "application")&&($content_mime_type[1] == "json")))
                 $code = 'ob_start(); ?>'.$renderer->output.'<?php return ob_get_clean();';
             else{ 
                 $safe_binary_string = base64_encode($renderer->output);
@@ -402,7 +419,7 @@ class Movabls_Run {
      */
     private function add_place($place,$toplevel = null) {
 
-		$place->inputs = json_decode($place->inputs);
+        $place->inputs = json_decode($place->inputs,TRUE);
 
         if (!empty($toplevel))
             $GLOBALS->_PLACE = $this->extract_url_variables($place->url,$toplevel,$place->inputs);
@@ -428,7 +445,7 @@ class Movabls_Run {
         );
         $this->stack->push($info);
 
-		if ($handle = create_function($argstring, $code))
+        if ($handle = create_function($argstring, $code))
             $this->places->{$place->place_GUID}->handle = $handle;
         else
             throw new Exception('Syntax Error in Place URL',500);
@@ -486,7 +503,7 @@ class Movabls_Run {
     private function run_tags($interface_GUID,$tags,$inputs,$toplevel = false) {
 
         foreach ($tags as $name => $tag) {
-
+//print_r($tag);
             if (isset($tag->expression)) {
                 $info = array(
                     'expression' => $tag->expression
@@ -550,9 +567,8 @@ class Movabls_Run {
      * @return <mixed> evaluated value
      */
     private function run_expression($expression,$interface_GUID) {
-
         $values = array();
-
+//echo $expression;
         foreach ($this->interfaces->$interface_GUID as $tag => $value) {
             $args[] = $tag;
             $values[] = $value;
@@ -628,20 +644,16 @@ class Movabls_Run {
         //Try to run the user's custom error place
         try {
             //To prevent an infinite loop, check to see if we're already running the error place
-            $error_urls = array(
-                'http://'.$GLOBALS->_SERVER['HTTP_HOST'].'%',
-                'https://'.$GLOBALS->_SERVER['HTTP_HOST'].'%'
-            );
             foreach ($this->places as $place) {
-				if (!empty($place) && in_array($place->url,$error_urls))
+                if (!empty($place) && $place->url == '%')
                     throw new Exception('Error place contains errors!');
             }
             print_r($this->run_place('%'));
         }
         catch (Exception $error_place) {
-			if ($error_place->getMessage() != 'Error place contains errors!')
+            if ($error_place->getMessage() != 'Error place contains errors!')
                 $this->error_handler('Exception',$error_place->getMessage(),$error_place->getFile(),$error_place->getLine(),$error_place->getCode());
-			echo 'Error place contains errors!<br /><br />Dumping $GLOBALS->_ERRORS:<br /><br />';
+            echo 'Error place contains errors!<br /><br />Dumping $GLOBALS->_ERRORS:<br /><br />';
             print_r($GLOBALS->_ERRORS);
         }
         exit(1);
@@ -654,7 +666,7 @@ class Movabls_Run {
      * mechanism.  Compiler, core, and parse errors will still not be caught.
      */
     public function shutdown_handler() {
-
+//print_r(error_get_last());
         $error = error_get_last();
         if (isset($error['type']) && $error['type'] == E_ERROR)
             $this->error_handler($error['type'],$error['message'],$error['file'],$error['line']);

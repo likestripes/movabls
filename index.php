@@ -1,7 +1,9 @@
 <?php
 /*
  * Movabls by LikeStripes LLC
- */
+*/
+//print_r($_POST);
+//print_r($_SERVER);
 
 function __autoload($name) {
 
@@ -17,47 +19,38 @@ function __autoload($name) {
 
 //Override all superglobals with read-only variants
 Movabls_Session::get_session();
-//TODO: Delete this placeholder
-$_USER['is_owner'] = true;
 $GLOBALS = new Movabls_Globals();
 unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV,$_USER);
 
 //TODO: Delete this once you have a way to log in via the IDE
-if (empty($GLOBALS->_USER['session_id'])) {
+
+if (!$GLOBALS->_USER['session_id']) {
+/*	
+	if (!$GLOBALS->_POST['email'] || !$GLOBALS->_POST['password']) {
+   
+   ?>
+   <form method="POST">
+	<input type="text" name="email" /> <br/>
+	<input type="password" name="password" />
+	<input type="submit" value="Sign In!" />
+</form>
+   <?
+   
+   }else{
+   
+   Movabls_Users::login('email',$GLOBALS->_POST['email'],$GLOBALS->_POST['password']);
+   header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
+   die();
+   }
+   
+   */
+   
+   /*
     Movabls_Users::login('email','test@test.test','testpassword');
-    header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
+   header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
     die();
+	*/
 }
-
-print_r(Movabls::get_meta('interface'));die();
-
-//Insert API calls here temporarily (famously awesome UI)
-
-/*Places
-Movabls::set_movabl('place',array(
-	'url' => '///api/get_index',
-	'https' => false,
-	'media_GUID' => 'mda000000014hpxfa2r865p786oe5d55',
-	//'interface_GUID' => '',
-));
-//*/
-
-/*Interfaces
-Movabls::set_movabl('interface',array(
-	'content' => array(
-    
-    )
-));
-//*/
-
-/*Media / functions
-Movabls::set_movabl('media',array(
-	'inputs' => array(),
-    'mimetype' => 'image/png',
-	'content' => <<<HEY
-HEY
-));
-//*/
 
 //Run it!
 new Movabls_Run;
