@@ -4,6 +4,7 @@
 */
 //print_r($_POST);
 //print_r($_SERVER);
+phpinfo();
 
 function __autoload($name) {
 
