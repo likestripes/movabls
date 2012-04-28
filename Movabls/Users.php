@@ -31,7 +31,7 @@ class Movabls_Users {
             $fieldvalues = ",'".implode("','",array_values($fields))."'";
         }
 
-        $mvsdb->query("INSERT INTO `movabls_user`.`mvs_users` (user_id,password,nonce$fieldnames)
+        $mvsdb->query("INSERT INTO `mvs_users` (user_id,password,nonce$fieldnames)
                        VALUES ('','$password','$nonce'$fieldvalues)");
 
 					//   echo $mvsdb->errno;
@@ -56,7 +56,7 @@ class Movabls_Users {
         if (empty($mvsdb))
             $mvsdb = self::db_link();
 
-        $mvsdb->query("INSERT INTO `movabls_user`.`mvs_groups` (group_id,name,session_term)
+        $mvsdb->query("INSERT INTO `mvs_groups` (group_id,name,session_term)
                        VALUES ('','$group_name','$session_term')");
 
 					//   echo $mvsdb->errno;
@@ -67,7 +67,7 @@ class Movabls_Users {
             $group_id =  $mvsdb->insert_id;
 			
 			
-	$mvsdb->query("INSERT INTO  `movabls_user`.`mvs_group_memberships` ( `user_id` ,`group_id` ) VALUES ('6',  '$group_id' );");
+	$mvsdb->query("INSERT INTO  `mvs_group_memberships` ( `user_id` ,`group_id` ) VALUES ('6',  '$group_id' );");
 			return $group_id;
 
     }
@@ -98,7 +98,7 @@ class Movabls_Users {
         $field = $mvsdb->real_escape_string($field);
         $value = $mvsdb->real_escape_string($value);
 
-        $results = $mvsdb->query("SELECT user_id,password,nonce FROM `movabls_user`.`mvs_users`
+        $results = $mvsdb->query("SELECT user_id,password,nonce FROM `mvs_users`
                                   WHERE `$field` = '$value'");
         if ($mvsdb->errno)
          return false;   //throw new Exception('MYSQL Error: '.$mvsdb->error,500);
@@ -146,7 +146,7 @@ return false;
         $nonce = self::generate_nonce();
         $password = self::generate_password($password, $nonce);
 
-        $mvsdb->query("UPDATE `movabls_user`.`mvs_users` SET password = '$password',nonce = '$nonce'
+        $mvsdb->query("UPDATE `mvs_users` SET password = '$password',nonce = '$nonce'
                        WHERE user_id = $user_id");
 
         if ($mvsdb->errno)
@@ -160,9 +160,9 @@ return false;
 
         $mvsdb = self::db_link();
 
-        $result = $mvsdb->query("SELECT g.group_id, g.name, g.session_term, u.email, u.user_id FROM `movabls_user`.`mvs_users` u
-LEFT JOIN `movabls_user`.`mvs_group_memberships` gm ON u.user_id= gm.user_id
-LEFT JOIN `movabls_user`.`mvs_groups` g ON gm.group_id= g.group_id" );
+        $result = $mvsdb->query("SELECT g.group_id, g.name, g.session_term, u.email, u.user_id FROM `mvs_users` u
+LEFT JOIN `mvs_group_memberships` gm ON u.user_id= gm.user_id
+LEFT JOIN `mvs_groups` g ON gm.group_id= g.group_id" );
         if(empty($result))
             return array();
 $users=Array();
@@ -186,9 +186,9 @@ $users=Array();
 
         $mvsdb = self::db_link();
 
-        $result = $mvsdb->query("SELECT g.group_id, g.name, g.session_term, u.email, u.user_id FROM `movabls_user`.`mvs_groups` g
-LEFT JOIN `movabls_user`.`mvs_group_memberships` gm ON g.group_id= gm.group_id
-INNER JOIN `movabls_user`.`mvs_users` u ON gm.user_id= u.user_id" );
+        $result = $mvsdb->query("SELECT g.group_id, g.name, g.session_term, u.email, u.user_id FROM `mvs_groups` g
+LEFT JOIN `mvs_group_memberships` gm ON g.group_id= gm.group_id
+INNER JOIN `mvs_users` u ON gm.user_id= u.user_id" );
         if(empty($result))
             return array();
 $groups=Array();

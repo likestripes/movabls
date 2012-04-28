@@ -1,4 +1,3 @@
-foo
 <?php
 /*
  * Movabls by LikeStripes LLC
