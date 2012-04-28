@@ -67,7 +67,7 @@ class Movabls_Session {
                 $results->free();
                 
                 //Create $_USER array
-                $results = $mvsdb->query("SELECT * FROM `movabls_user`.`mvs_users`
+                $results = $mvsdb->query("SELECT * FROM `mvs_users`
                                           WHERE user_id = {$session['user_id']}");
                 if ($mvsdb->errno)
                     throw new Exception('MYSQL Error: '.$mvsdb->error,500);
@@ -77,7 +77,7 @@ class Movabls_Session {
                 $results->free();
                 
                 //Add $_USER['groups']
-                $results = $mvsdb->query("SELECT DISTINCT group_id FROM `movabls_user`.`mvs_group_memberships`
+                $results = $mvsdb->query("SELECT DISTINCT group_id FROM `mvs_group_memberships`
                                           WHERE user_id = {$session['user_id']}");
                 if ($mvsdb->errno)
                     throw new Exception('MYSQL Error: '.$mvsdb->error,500);
@@ -152,8 +152,8 @@ class Movabls_Session {
 
         //To determine session term, take the term settings for each of the
         //user's groups and use the shortest term
-        $results = $mvsdb->query("SELECT MIN(g.session_term) AS term FROM `movabls_user`.`mvs_groups` g
-                                  INNER JOIN `movabls_user`.`mvs_group_memberships` m ON g.group_id = m.group_id
+        $results = $mvsdb->query("SELECT MIN(g.session_term) AS term FROM `mvs_groups` g
+                                  INNER JOIN `mvs_group_memberships` m ON g.group_id = m.group_id
                                   WHERE m.user_id = $user_id AND g.session_term != 'NULL'");
         if ($mvsdb->errno)
             throw new Exception('MYSQL Error: '.$mvsdb->error,500);
@@ -251,7 +251,7 @@ class Movabls_Session {
      */
     private static function db_link() {
 		
-		require ('../config.inc.php');
+		include ('../config.inc.php');
         $mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name);
 		
         if (mysqli_connect_errno()) {
