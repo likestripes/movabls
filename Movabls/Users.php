@@ -247,7 +247,7 @@ $groups=Array();
      * @return mysqli handle
      */
     private static function db_link() {
-		require_once ('../config.inc.php');
+		require ('../config.inc.php');
         $mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name);
         if (mysqli_connect_errno()) {
             printf("Connect failed: %s\n", mysqli_connect_error());
