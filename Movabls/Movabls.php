@@ -1122,7 +1122,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      */
     private static function db_link() {
 		include ('../config.inc.php');
-        $mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name);
+        $mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
         if (mysqli_connect_errno()) {
             printf("Connect failed: %s\n", mysqli_connect_error());
             exit();

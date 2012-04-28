@@ -4,8 +4,8 @@
 */
 //print_r($_POST);
 //print_r($_SERVER);
-phpinfo();
-
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
 function __autoload($name) {
 
     if ($name == "Movabls")

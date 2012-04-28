@@ -24,7 +24,7 @@ class Movabls_Run {
 
             //Get database handle
 			include ('../config.inc.php');
-            $this->mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name);
+            $this->mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
 
             //Get session
             Movabls_Session::get_session($this->mvsdb);
