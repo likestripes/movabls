@@ -250,8 +250,10 @@ class Movabls_Session {
      * @return mysqli handle
      */
     private static function db_link() {
-
-        $mvsdb = new mysqli('localhost','dbuser','password','mvs_database');
+		
+		require_once ('../config.inc.php');
+        $mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name);
+		
         if (mysqli_connect_errno()) {
             printf("Connect failed: %s\n", mysqli_connect_error());
             exit();

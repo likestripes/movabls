@@ -23,7 +23,8 @@ class Movabls_Run {
             register_shutdown_function(array($this,'shutdown_handler'));
 
             //Get database handle
-            $this->mvsdb = new mysqli('localhost','dbuser','password','mvs_database');
+			require_once ('../config.inc.php');
+            $this->mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name);
 
             //Get session
             Movabls_Session::get_session($this->mvsdb);
