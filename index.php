@@ -25,7 +25,26 @@ $GLOBALS = new Movabls_Globals();
 unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV,$_USER);
 
 //TODO: Delete this once you have a way to log in via the IDE
-
+if (!$GLOBALS->_USER['session_id']) {
+	
+	if (!$GLOBALS->_POST['email'] || !$GLOBALS->_POST['password']) {
+   
+   ?>
+   <form method="POST">
+	<input type="text" name="email" /> <br/>
+	<input type="password" name="password" />
+	<input type="submit" value="Sign In!" />
+</form>
+   <?
+   
+   }else{
+   
+   Movabls_Users::login('email',$GLOBALS->_POST['email'],$GLOBALS->_POST['password']);
+   header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
+   die();
+   }
+   
+   }
 
 //Run it!
 new Movabls_Run;
