@@ -26,7 +26,7 @@ $GLOBALS = new Movabls_Globals();
 
 unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV,$_USER);
 
-print_r($GLOBALS);
+//print_r($GLOBALS);
 /*
 //TODO: Delete this once you have a way to log in via the IDE
 if (!isset($GLOBALS->_USER['session_id'])) {
