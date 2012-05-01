@@ -88,7 +88,7 @@ class Movabls_Users {
      */
     public static function login($field,$value,$password,$mvsdb = null) {
 
-        if ($GLOBALS->_USER['session_id']) self::logout();
+        if (isset($GLOBALS->_USER['session_id'])) self::logout();
 //echo "sdf";
 		//            throw new Exception("Already logged in.  Log out before logging in again.", 500);
 
