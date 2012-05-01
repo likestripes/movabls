@@ -111,7 +111,7 @@ class Movabls_Run {
             $error_place = 'AND url != "%"';
         $result = $this->mvsdb->query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM `mvs_places`
                                        WHERE ('$url' LIKE url OR '$url/' LIKE url) $error_place");
-print_r($result);
+//print_r($result);
         //Look for the URL with the greatest length before a '%' sign
         $max = 0;
         while($row = $result->fetch_object()) {
@@ -126,7 +126,7 @@ print_r($result);
             }
         }
         $result->free();
-
+print_r($place);
         if (!isset($place))
             throw new Exception ('Place Not Found',404);
 
