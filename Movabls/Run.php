@@ -134,37 +134,37 @@ class Movabls_Run {
             $this->add_place($place,$url);
         else
             $this->add_place($place);
-echo "add place  passed";
 
-        if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb)){
-echo "no perm checked out";		
-		
-	print_r($GLOBALS);	
-if (!$GLOBALS->_USER['session_id']) {
-	echo "no sess";
-	
-	if (!$GLOBALS->_POST['email'] || !$GLOBALS->_POST['password']) {
-		// header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
-		echo "bad pass";
-		die();
-	}else{
-		Movabls_Users::login('email',$GLOBALS->_POST['email'],$GLOBALS->_POST['password']);
-		//header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
-		die();
+		echo "add place  passed";
+		print_r($GLOBALS);	
+
+		if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb)){
+			echo "no perm checked out";		
+			if (!$GLOBALS->_USER['session_id']) {
+				echo "no sess";
+				
+				if (!$GLOBALS->_POST['email'] || !$GLOBALS->_POST['password']) {
+					// header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
+					echo "bad pass";
+					die();
+				}else{
+					Movabls_Users::login('email',$GLOBALS->_POST['email'],$GLOBALS->_POST['password']);
+					//header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
+					die();
+					}
+			}else{
+				// header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
+				echo "no perms but has sess";
+				die();
+				// throw new Exception('You do not have permission to access this place',403);
+			}
 		}
-}else{
-	// header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
-	echo "has sess";
-	die();
-	// throw new Exception('You do not have permission to access this place',403);
-}
-}
 			
 			
         if ($place->https && !$GLOBALS->_SERVER['HTTPS']) {
             //header('Location: https://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
             echo  "no https";
-die();
+			die();
         }
         
         return $place;
