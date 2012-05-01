@@ -115,7 +115,6 @@ print_r($url);
         //Look for the URL with the greatest length before a '%' sign
         $max = 0;
         while($row = $result->fetch_object()) {
-		print_r($row);
             if ($row->url == $url) {
                 $place = $row;
                 break;
@@ -130,17 +129,15 @@ print_r($url);
 //print_r($place);
         if (!isset($place))
             throw new Exception ('Place Not Found',404);
-/*
+
         if ($url != '%')
             $this->add_place($place,$url);
         else
             $this->add_place($place);
-*/
+
 		//echo "add place  passed";
 		//print_r($GLOBALS);	
 //echo $place->place_GUID;
-//echo "sdf".Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb)."dd";
-
 		if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb)){
 			echo "no perm checked out";		
 			if (!$GLOBALS->_USER['session_id']) {
