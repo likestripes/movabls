@@ -126,7 +126,7 @@ class Movabls_Run {
             }
         }
         $result->free();
-print_r($place);
+//print_r($place);
         if (!isset($place))
             throw new Exception ('Place Not Found',404);
 
@@ -142,8 +142,8 @@ print_r($place);
 		if (!$GLOBALS->_USER['session_id']) {
 
 	if (!$GLOBALS->_POST['email'] || !$GLOBALS->_POST['password']) {
-   header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
-//  echo "dsfsd";
+  // header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
+  echo "bad pass";
    die();
    }else{
    
@@ -152,8 +152,8 @@ print_r($place);
    die();
    }
    }else{
-		   header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
-		//echo "dsf";
+		  // header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
+		echo "no perms";
 		die();
            // throw new Exception('You do not have permission to access this place',403);
 
@@ -162,8 +162,9 @@ print_r($place);
 			
 			
         if ($place->https && !$GLOBALS->_SERVER['HTTPS']) {
-            header('Location: https://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
-            die();
+            //header('Location: https://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
+            echo  "no https";
+die();
         }
         
         return $place;
