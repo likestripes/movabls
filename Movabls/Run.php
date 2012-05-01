@@ -422,8 +422,8 @@ print_r($place);
      */
     private function add_place($place,$toplevel = null) {
 
-echo "add place";
-print_r($place);
+		//echo "add place";
+		//print_r($place);
 
         $place->inputs = json_decode($place->inputs,TRUE);
 
