@@ -25,7 +25,7 @@ class Movabls_Run {
             //Get database handle
 			include ('config.inc.php');
             $this->mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
-	    print_r($this->mvsdb);
+//	    print_r($this->mvsdb);
             //Get session
             Movabls_Session::get_session($this->mvsdb);
 
@@ -62,9 +62,9 @@ class Movabls_Run {
             else
                 $url =$GLOBALS->_SERVER['REQUEST_URI'];
         }
-print_r($url);
+//print_r($url);
         $place = $this->get_place($url);
-print_r($place);
+//print_r($place);
         //We're about to execute user code, so we need to lock globals now that we're done with it.
         $GLOBALS->lock();
         
@@ -111,7 +111,7 @@ print_r($place);
             $error_place = 'AND url != "%"';
         $result = $this->mvsdb->query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM `mvs_places`
                                        WHERE ('$url' LIKE url OR '$url/' LIKE url) $error_place");
-
+print_r($result);
         //Look for the URL with the greatest length before a '%' sign
         $max = 0;
         while($row = $result->fetch_object()) {
