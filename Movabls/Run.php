@@ -134,9 +134,10 @@ class Movabls_Run {
             $this->add_place($place,$url);
         else
             $this->add_place($place);
+echo "add place  passed";
 
         if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb)){
-		
+echo "no perm checks";		
 		
 		
 		if (!$GLOBALS->_USER['session_id']) {
@@ -422,6 +423,7 @@ die();
      */
     private function add_place($place,$toplevel = null) {
 
+echo "add place";
         $place->inputs = json_decode($place->inputs,TRUE);
 
         if (!empty($toplevel))
