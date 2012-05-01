@@ -25,7 +25,7 @@ class Movabls_Run {
             //Get database handle
 			include ('config.inc.php');
             $this->mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
-	    print_r($this);
+//	    print_r($this);
             //Get session
             Movabls_Session::get_session($this->mvsdb);
 
@@ -63,7 +63,7 @@ class Movabls_Run {
                 $url =$GLOBALS->_SERVER['REQUEST_URI'];
         }
         $place = $this->get_place($url);
-
+print_r($place);
         //We're about to execute user code, so we need to lock globals now that we're done with it.
         $GLOBALS->lock();
         
