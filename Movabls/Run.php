@@ -148,8 +148,9 @@ print_r($place);
 					echo "bad pass";
 					die();
 				}else{
-					Movabls_Users::login('email',$GLOBALS->_POST['email'],$GLOBALS->_POST['password']);
+					//Movabls_Users::login('email',$GLOBALS->_POST['email'],$GLOBALS->_POST['password']);
 					//header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
+					echo "attempt to login";
 					die();
 					}
 			}else{
