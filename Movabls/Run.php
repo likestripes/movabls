@@ -62,7 +62,7 @@ class Movabls_Run {
             else
                 $url =$GLOBALS->_SERVER['REQUEST_URI'];
         }
-//print_r($url);
+print_r($url);
         $place = $this->get_place($url);
 //print_r($place);
         //We're about to execute user code, so we need to lock globals now that we're done with it.
@@ -104,7 +104,7 @@ class Movabls_Run {
 
         //Find correct place to use (static places [without %] take precedence over dynamic places [with %])
         $url = $this->mvsdb->real_escape_string($url);
-echo $url;
+
         if ($url == '%')
             $error_place = '';
         else
@@ -115,6 +115,7 @@ echo $url;
         //Look for the URL with the greatest length before a '%' sign
         $max = 0;
         while($row = $result->fetch_object()) {
+		print_r($row);
             if ($row->url == $url) {
                 $place = $row;
                 break;
@@ -129,12 +130,12 @@ echo $url;
 //print_r($place);
         if (!isset($place))
             throw new Exception ('Place Not Found',404);
-
+/*
         if ($url != '%')
             $this->add_place($place,$url);
         else
             $this->add_place($place);
-
+*/
 		//echo "add place  passed";
 		//print_r($GLOBALS);	
 //echo $place->place_GUID;
