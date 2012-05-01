@@ -27,7 +27,7 @@ unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV,$_USER);
 //TODO: Delete this once you have a way to log in via the IDE
 if (!$GLOBALS->_USER['session_id']) {
 	
-	if (!$GLOBALS->_POST['email'] || !$GLOBALS->_POST['password']) {
+	if (!isset($GLOBALS->_POST['email']) || !isset($GLOBALS->_POST['password'])) {
    
    ?>
    <form method="POST">
