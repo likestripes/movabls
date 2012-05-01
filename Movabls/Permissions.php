@@ -14,7 +14,7 @@ class Movabls_Permissions {
      * @param mysqli handle $mvsdb
      */
     public static function check_permission($movabl_type,$movabl_guid,$permission_type,$mvsdb = null) {
-	/*echo 'checking perm';
+
         if (in_array(1,$GLOBALS->_USER['groups']))
             return true;
 
@@ -42,13 +42,11 @@ class Movabls_Permissions {
         if ($results->num_rows == 0){
 		//Movabls_Users::login('email','test@test.test','testpassword');
           //header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']///SignIn);
-		   echo "$movabl_type,$movabl_guid,$permission_type"; // 
+		  // echo "$movabl_type,$movabl_guid,$permission_type"; // 
 		  return false;
         }else{
             return true;
 			}
-*/
-return true;
 
     }
 

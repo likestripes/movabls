@@ -138,8 +138,8 @@ class Movabls_Run {
 		//echo "add place  passed";
 		//print_r($GLOBALS);	
 //echo $place->place_GUID;
-echo "sdf".Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb)."dd";
-/*
+//echo "sdf".Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb)."dd";
+
 		if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb)){
 			echo "no perm checked out";		
 			if (!$GLOBALS->_USER['session_id']) {
@@ -169,7 +169,7 @@ echo "sdf".Movabls_Permissions::check_permission('place', $place->place_GUID, 'e
             echo  "no https";
 			die();
         }
-  */      
+        
         return $place;
 
     }
