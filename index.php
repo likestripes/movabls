@@ -23,6 +23,7 @@ function __autoload($name) {
 //Override all superglobals with read-only variants
 Movabls_Session::get_session();
 $GLOBALS = new Movabls_Globals();
+print_r($GLOBALS);
 unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV,$_USER);
 /*
 //TODO: Delete this once you have a way to log in via the IDE
