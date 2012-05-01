@@ -141,7 +141,7 @@ echo "no perm checked out";
 		
 		
 		if (!$GLOBALS->_USER['session_id']) {
-
+echo "no sess";
 	if (!$GLOBALS->_POST['email'] || !$GLOBALS->_POST['password']) {
   // header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
   echo "bad pass";
