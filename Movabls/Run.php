@@ -64,7 +64,7 @@ class Movabls_Run {
         }
 //print_r($url);
         $place = $this->get_place($url);
-print_r($place);
+//print_r($place);
         //We're about to execute user code, so we need to lock globals now that we're done with it.
         $GLOBALS->lock();
         
@@ -137,7 +137,7 @@ print_r($place);
 
 		//echo "add place  passed";
 		//print_r($GLOBALS);	
-
+/*
 		if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb)){
 			echo "no perm checked out";		
 			if (!$GLOBALS->_USER['session_id']) {
@@ -161,7 +161,7 @@ print_r($place);
 			}
 		}
 			
-			
+			*/
         if ($place->https && !$GLOBALS->_SERVER['HTTPS']) {
             //header('Location: https://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
             echo  "no https";
