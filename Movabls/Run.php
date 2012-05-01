@@ -62,7 +62,7 @@ class Movabls_Run {
             else
                 $url =$GLOBALS->_SERVER['REQUEST_URI'];
         }
-print_r($url);
+
         $place = $this->get_place($url);
 //print_r($place);
         //We're about to execute user code, so we need to lock globals now that we're done with it.
@@ -110,7 +110,7 @@ print_r($url);
         else
             $error_place = 'AND url != "%"';
         $result = $this->mvsdb->query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM `mvs_places`
-                                       WHERE ('$url' LIKE url OR '$url/' LIKE url) $error_place");
+                                       WHERE ('$url' LIKE url OR '$url/' LIKE url OR '/$url' LIKE url) $error_place");
 //print_r($result);
         //Look for the URL with the greatest length before a '%' sign
         $max = 0;
