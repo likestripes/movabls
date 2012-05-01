@@ -27,7 +27,7 @@ class Movabls_Run {
             $this->mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
 //	    print_r($this->mvsdb);
             //Get session
-            Movabls_Session::get_session($this->mvsdb);
+            //Movabls_Session::get_session($this->mvsdb);
 
             //Run it!
             print_r($this->run_place());
@@ -64,7 +64,7 @@ class Movabls_Run {
         }
 //print_r($url);
         $place = $this->get_place($url);
-//print_r($place);
+print_r($place);
         //We're about to execute user code, so we need to lock globals now that we're done with it.
         $GLOBALS->lock();
         
@@ -135,9 +135,9 @@ class Movabls_Run {
         else
             $this->add_place($place);
 
-		echo "add place  passed";
-		print_r($GLOBALS);	
-
+		//echo "add place  passed";
+		//print_r($GLOBALS);	
+/*
 		if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb)){
 			echo "no perm checked out";		
 			if (!$GLOBALS->_USER['session_id']) {
@@ -166,7 +166,7 @@ class Movabls_Run {
             echo  "no https";
 			die();
         }
-        
+        */
         return $place;
 
     }
