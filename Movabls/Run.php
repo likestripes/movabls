@@ -104,7 +104,7 @@ class Movabls_Run {
 
         //Find correct place to use (static places [without %] take precedence over dynamic places [with %])
         $url = $this->mvsdb->real_escape_string($url);
-
+echo $url;
         if ($url == '%')
             $error_place = '';
         else
