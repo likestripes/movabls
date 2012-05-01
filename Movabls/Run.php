@@ -137,7 +137,7 @@ class Movabls_Run {
 
 		//echo "add place  passed";
 		//print_r($GLOBALS);	
-
+/*
 		if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute', $this->mvsdb)){
 			//echo "no perm checked out";		
 			if (!$GLOBALS->_USER['session_id']) {
@@ -167,7 +167,7 @@ class Movabls_Run {
             echo  "no https";
 			die();
         }
-        
+        */
         return $place;
 
     }
