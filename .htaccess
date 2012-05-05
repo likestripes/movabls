@@ -1,8 +1,8 @@
 RewriteEngine on
-RewriteBase /
+#RewriteBase /
 #RewriteCond %{THE_REQUEST}
 #RewriteCond %{THE_REQUEST} -s [OR]
 #RewriteCond %{THE_REQUEST} -l [OR]
 #RewriteCond %{THE_REQUEST} -d
-RewriteRule ^(.*)$ /$1
-RewriteRule ^(.*)$ index.php [NC,L]
+#RewriteRule ^(.*)$ /foo$1 [L]
+RewriteRule .* index.php [NC,L]
