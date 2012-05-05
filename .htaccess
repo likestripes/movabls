@@ -1,4 +1,5 @@
 RewriteEngine on
+RewriteBase /
 #RewriteCond %{THE_REQUEST}
 #RewriteCond %{THE_REQUEST} -s [OR]
 #RewriteCond %{THE_REQUEST} -l [OR]
