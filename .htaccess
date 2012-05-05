@@ -5,4 +5,4 @@ RewriteBase /
 #RewriteCond %{THE_REQUEST} -l [OR]
 #RewriteCond %{THE_REQUEST} -d
 #RewriteRule ^(.*)$ - [NC,L]
-RewriteRule ^/(.*)$ index.php [NC,L]
+RewriteRule ^(/.*)$ index.php [NC,L]
