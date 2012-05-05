@@ -1,4 +1,3 @@
-6
 <?php
 /*
  * Movabls by LikeStripes LLC
