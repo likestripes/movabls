@@ -119,8 +119,7 @@ print_r($e);
         //Look for the URL with the greatest length before a '%' sign
         $max = 0;
         while($row = $result->fetch_object()) {
-		print_r($row);
-            if ($row->url == $url) {
+            if ($row->url == $url || $row->url == "/".$url ) {
                 $place = $row;
                 break;
             }
@@ -131,8 +130,7 @@ print_r($e);
             }
         }
         $result->free();
-print_r($place);
-die();
+
         if (!isset($place))
             throw new Exception ('Place Not Found',404);
 
