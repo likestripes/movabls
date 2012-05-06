@@ -64,7 +64,7 @@ class Movabls_Run {
         }
 
         $place = $this->get_place($url);
-//print_r($place);
+print_r($place);
         //We're about to execute user code, so we need to lock globals now that we're done with it.
         $GLOBALS->lock();
         
