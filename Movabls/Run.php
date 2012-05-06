@@ -119,6 +119,7 @@ print_r($e);
         //Look for the URL with the greatest length before a '%' sign
         $max = 0;
         while($row = $result->fetch_object()) {
+		print_r($row);
             if ($row->url == $url) {
                 $place = $row;
                 break;
