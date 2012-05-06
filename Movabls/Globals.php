@@ -35,6 +35,7 @@ class Movabls_Globals {
         $this->data['_SESSION'] = $_SESSION;
         $this->data['_PLACE'] = array();
         $this->data['_ERRORS'] = array();
+//print_r($this->data);
     }
 
     function __get($var) {
