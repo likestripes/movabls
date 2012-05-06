@@ -49,7 +49,7 @@ print_r($e);
      * @return output
      */
     private function run_place($url = null) {
-echo $url;
+//echo $url;
         //Instantiate / reset containers
         $this->media = new StdClass();
         $this->functions = new StdClass();
@@ -65,7 +65,7 @@ echo $url;
         }
 
         $place = $this->get_place($url);
-print_r($place);
+//print_r($place);
         //We're about to execute user code, so we need to lock globals now that we're done with it.
         $GLOBALS->lock();
         
@@ -110,11 +110,10 @@ print_r($place);
             $error_place = '';
         else
             $error_place = 'AND url != "%"';
-  //      $result = $this->mvsdb->query
-print ("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM `mvs_places`
+        $result = $this->mvsdb->query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM `mvs_places`
                                        WHERE ('$url' LIKE url OR '$url/' LIKE url ) $error_place");
-die();
-print_r($result);
+//die();
+//print_r($result);
         //Look for the URL with the greatest length before a '%' sign
         $max = 0;
         while($row = $result->fetch_object()) {
