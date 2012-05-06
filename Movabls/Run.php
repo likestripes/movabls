@@ -111,8 +111,10 @@ print_r($e);
         else
             $error_place = 'AND url != "%"';
         $result = $this->mvsdb->query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM `mvs_places`
-                                       WHERE ('$url' LIKE url OR '/$url' LIKE url OR '$url/' LIKE url ) $error_place");
-//die();
+                   				   WHERE ('$url' LIKE url OR '/$url' LIKE url OR '$url/' LIKE url ) $error_place");
+echo "SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM `mvs_places`
+                                       WHERE ('$url' LIKE url OR '/$url' LIKE url OR '$url/' LIKE url )";
+								   //die();
 //print_r($result);
         //Look for the URL with the greatest length before a '%' sign
         $max = 0;
