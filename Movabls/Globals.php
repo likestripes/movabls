@@ -18,9 +18,10 @@ class Movabls_Globals {
 
         $this->data['_SERVER'] = $_SERVER;
 //        if (isset($this->data['_SERVER']['REDIRECT_forwarded']) && $this->data['_SERVER']['REDIRECT_forwarded']  === '1') $this->data['_SERVER']['REQUEST_URI'] = "/".$this->data['_SERVER']['REQUEST_URI'];
-		if(isset($_GET['slashed_url']) && !empty($_GET['slashed_url'])) $this->data['_SERVER']['REQUEST_URI'] = "/".$_GET['slashed_url'];
-		print_r($_GET);
-		die();
+		//if(isset($_GET['slashed_url']) && !empty($_GET['slashed_url'])) $this->data['_SERVER']['REQUEST_URI'] = "/".$_GET['slashed_url'];
+		//$this->data['_SERVER']['REQUEST_URI'] = ltrim($this->data['_SERVER']['REQUEST_URI'], '/');
+		//print_r($this->data['_SERVER']);
+	
         $this->data['_SERVER']['SITE_ID'] = 1;
         $this->data['_SERVER']['DATABASE'] = 'movabls_user';
         $this->data['_GET'] = $_GET;

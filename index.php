@@ -1,5 +1,10 @@
-15
+16
 <?php
+
+	print_r($GLOBALS);
+		die();
+		
+		
 /*
  * Movabls by LikeStripes LLC
 */
