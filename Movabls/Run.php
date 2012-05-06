@@ -35,6 +35,7 @@ try {
         }
         catch (Exception $e) {
             
+print_r($e);
             $this->error_handler('Exception',$e->getMessage(),$e->getFile(),$e->getLine(),$e->getCode());
                        
         }
@@ -109,8 +110,10 @@ print_r($place);
             $error_place = '';
         else
             $error_place = 'AND url != "%"';
-        $result = $this->mvsdb->query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM `mvs_places`
+  //      $result = $this->mvsdb->query
+print ("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM `mvs_places`
                                        WHERE ('$url' LIKE url OR '$url/' LIKE url ) $error_place");
+die();
 print_r($result);
         //Look for the URL with the greatest length before a '%' sign
         $max = 0;
@@ -126,7 +129,7 @@ print_r($result);
             }
         }
         $result->free();
-print_r($place);
+//print_r($place);
         if (!isset($place))
             throw new Exception ('Place Not Found',404);
 
