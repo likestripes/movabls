@@ -14,14 +14,14 @@ class Movabls_Run {
 
     public function __construct() {
 
-        try {
+       
 
             //Set up error reporting
             error_reporting(E_ALL);
             ini_set('display_errors',0);
             set_error_handler(array($this,'error_handler'));
             register_shutdown_function(array($this,'shutdown_handler'));
-
+try {
             //Get database handle
 			include ('config.inc.php');
             $this->mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
@@ -48,7 +48,7 @@ class Movabls_Run {
      * @return output
      */
     private function run_place($url = null) {
-
+echo $url;
         //Instantiate / reset containers
         $this->media = new StdClass();
         $this->functions = new StdClass();
@@ -111,7 +111,7 @@ print_r($place);
             $error_place = 'AND url != "%"';
         $result = $this->mvsdb->query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM `mvs_places`
                                        WHERE ('$url' LIKE url OR '$url/' LIKE url ) $error_place");
-//print_r($result);
+print_r($result);
         //Look for the URL with the greatest length before a '%' sign
         $max = 0;
         while($row = $result->fetch_object()) {
@@ -126,7 +126,7 @@ print_r($place);
             }
         }
         $result->free();
-//print_r($place);
+print_r($place);
         if (!isset($place))
             throw new Exception ('Place Not Found',404);
 
