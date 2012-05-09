@@ -120,7 +120,8 @@ print_r($e);
         $max = 0;
         while($row = $result->fetch_object()) {
             if ($row->url == $url || $row->url == "/".$url ) {
-                $place = $row;
+				$url = $row->url;
+				$place = $row;
                 break;
             }
             $static = strpos($row->url,'%');
