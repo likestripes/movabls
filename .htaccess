@@ -1,6 +1,2 @@
-RewriteEngine on
-RewriteCond %{THE_REQUEST} -s [OR]
-RewriteCond %{THE_REQUEST} -l [OR]
-RewriteCond %{THE_REQUEST} -d
-RewriteRule ^(.*)$ - [N]
-RewriteRule ^(.*)$ index.php/%1 [NC,L]
+RewriteCond %{QUERY_STRING} !vardump
+RewriteRule (.*) <a href="http://www.example.com/$1?vardump&thereq=%{THE_REQUEST}&reqhost=%{HTTP_HOST}">http://www.example.com/$1?vardump&thereq=%{THE_REQUEST}&reqhost=%{HTTP_HOST}</a> [R=301,L,QSA]
