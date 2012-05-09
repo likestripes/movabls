@@ -1,5 +1,6 @@
 RewriteEngine on
-RewriteCond %{THE_REQUEST} ^(.)//(.)$
-RewriteCond %{THE_REQUEST} ^(.)///(.)$
+RewriteCond %{THE_REQUEST} ^/(.)$ [OR]
+RewriteCond %{THE_REQUEST} ^//(.)$ [OR]
+RewriteCond %{THE_REQUEST} ^///(.)$
 RewriteRule ^(.*)$ - [N]
 RewriteRule ^(.*)$ index.php [NC,L]
