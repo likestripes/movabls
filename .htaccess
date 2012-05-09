@@ -1,6 +1,6 @@
 RewriteEngine on
-RewriteCond %{REQUEST_FILENAME} -s [OR]
-RewriteCond %{REQUEST_FILENAME} -l [OR]
-RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{THE_REQUEST} -s [OR]
+RewriteCond %{THE_REQUEST} -l [OR]
+RewriteCond %{THE_REQUEST} -d
 RewriteRule ^(.*)$ - [NC,L]
-RewriteRule ^(.*)$ index.php/ [NC,L]
+RewriteRule ^(.*)$ index.php?$1 [NC,L]
