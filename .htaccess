@@ -2,5 +2,4 @@ RewriteEngine on
 RewriteCond %{THE_REQUEST} -s [OR]
 RewriteCond %{THE_REQUEST} -l [OR]
 RewriteCond %{THE_REQUEST} -d
-RewriteRule ^(.*)$ - [NC,L]
-RewriteRule ^(.*)$ index.php?$1 [NC,L]
+RewriteRule ^(.*)$ index.php?$0 [NC,L]
