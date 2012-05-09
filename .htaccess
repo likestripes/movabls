@@ -1,1 +1,1 @@
-AliasMatch (.*) index.php
+AliasMatch (.*) index.php?foo=$1
