@@ -17,8 +17,12 @@ class Movabls_Globals {
 
 
         $this->data['_SERVER'] = $_SERVER;
-	if (!substr($this->data['_SERVER']['REQUEST_URI'], 0, 3) == "///") $this->data['_SERVER']['REQUEST_URI'] = "/".$this->data['_SERVER']['REQUEST_URI'];
-        $this->data['_SERVER']['SITE_ID'] = 1;
+	if (!substr($this->data['_SERVER']['REQUEST_URI'], 0, 3) == "///"):
+		$this->data['_SERVER']['REQUEST_URI'] = "/".$this->data['_SERVER']['REQUEST_URI'];
+        	$_SERVER['REQUEST_URI']="/".$_SERVER['REQUEST_URI'];
+	endif;
+
+	$this->data['_SERVER']['SITE_ID'] = 1;
         $this->data['_SERVER']['DATABASE'] = 'movabls_user';
         $this->data['_GET'] = $_GET;
         $this->data['_POST'] = $_POST;
