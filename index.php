@@ -3,8 +3,8 @@
  * Movabls by LikeStripes LLC
 */
 //print_r($_POST);
-//print_r($_SERVER);
-//phpinfo();
+print_r($_SERVER);
+phpinfo();
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 //setcookie('httpsession', '4347dc968bfae2292bce89ed856f7d965c64d8424f9f57bc9b3267.74335679');
