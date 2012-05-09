@@ -14,8 +14,8 @@ class Movabls_Permissions {
      * @param mysqli handle $mvsdb
      */
     public static function check_permission($movabl_type,$movabl_guid,$permission_type,$mvsdb = null) {
-
-        if (in_array(1,$GLOBALS->_USER['groups']))
+return true;
+/*        if (in_array(1,$GLOBALS->_USER['groups']))
             return true;
 
         if (empty($GLOBALS->_USER['groups']))
@@ -47,7 +47,7 @@ class Movabls_Permissions {
         }else{
             return true;
 			}
-
+*/
     }
 
     /**
