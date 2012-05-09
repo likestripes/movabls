@@ -1,1 +1,3 @@
-ScriptAliasMatch  ^(.*) index.php?foo=$1
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !=/index.php
+RewriteRule .* /index.php
