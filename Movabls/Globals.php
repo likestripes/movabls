@@ -17,7 +17,7 @@ class Movabls_Globals {
 
 
         $this->data['_SERVER'] = $_SERVER;
-	if (substr($this->data['_SERVER']['REQUEST_URI'], 0, 3) != "///"):
+	if (substr($this->data['_SERVER']['REQUEST_URI'], 0, 2) === "//"):
 		$this->data['_SERVER']['REQUEST_URI'] = "/".$this->data['_SERVER']['REQUEST_URI'];
         	$_SERVER['REQUEST_URI']="/".$_SERVER['REQUEST_URI'];
 	endif;
