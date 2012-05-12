@@ -16,7 +16,7 @@ function __autoload($name) {
     if (file_exists($fname.'.php'))
         require_once($fname.'.php');
     else
-        throw new Exception ("Class $name not found",500);
+        echo $name."sdf";//throw new Exception ("Class $name not found",500);
     
 }
 

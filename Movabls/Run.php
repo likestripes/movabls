@@ -3,6 +3,7 @@
  * Core Movabls Class - Instantiating this class runs the system
  * @author Travis Hardman
  */
+
 class Movabls_Run {
 
     private $mvsdb; //MySQLi database handle
@@ -14,7 +15,7 @@ class Movabls_Run {
 
     public function __construct() {
 
-       
+       $this->data = new Movabls_Data();
 
             //Set up error reporting
             error_reporting(E_ALL);
@@ -22,22 +23,24 @@ class Movabls_Run {
             set_error_handler(array($this,'error_handler'));
             register_shutdown_function(array($this,'shutdown_handler'));
 try {
-            //Get database handle
-			include ('config.inc.php');
-            $this->mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
+  
+          //Get database handle
+	//		include ('config.inc.php');
+         //   $this->mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
 //	    print_r($this->mvsdb);
             //Get session
             //Movabls_Session::get_session($this->mvsdb);
-
+	    $q = Movabls_Data::data_query("SELECT * from mvs_functions",DATA_ARRAY);
+	
+	var_dump($q);
             //Run it!
-            print_r($this->run_place());
-            
+//            print_r($this->run_place());
+
         }
         catch (Exception $e) {
-            
-print_r($e);
-            $this->error_handler('Exception',$e->getMessage(),$e->getFile(),$e->getLine(),$e->getCode());
-                       
+echo "dsf";
+		print_r($e);
+		$this->error_handler('Exception',$e->getMessage(),$e->getFile(),$e->getLine(),$e->getCode());
         }
 
     }
