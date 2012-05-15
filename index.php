@@ -16,15 +16,23 @@ function __autoload($name) {
     if (file_exists($fname.'.php'))
         require_once($fname.'.php');
     else
-        echo $name."sdf";//throw new Exception ("Class $name not found",500);
+        echo $name."class not found";//throw new Exception ("Class $name not found",500);
     
 }
 
 //Override all superglobals with read-only variants
-Movabls_Session::get_session();
-$GLOBALS = new Movabls_Globals();
+try{
 
-unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV,$_USER);
+	Movabls_Session::get_session();
+	$GLOBALS = new Movabls_Globals();
+
+	unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV,$_USER);
+
+	new Movabls_Run;
+}catch (Exception $e){
+echo "main one";
+print_r($e);
+}
 
 //print_r($GLOBALS);
 /*
@@ -51,7 +59,7 @@ if (!isset($GLOBALS->_USER['session_id'])) {
    }
 */
 //Run it!
-new Movabls_Run;
+//new Movabls_Run;
 
 /*
 $iterations = 1000;

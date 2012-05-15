@@ -33,7 +33,7 @@ return true;
 
         $guid = empty($movabl_guid) ? "IS NULL" : "= '".$movabl_guid."'";
 		
-        $results = $mvsdb->query("SELECT permissions_id FROM mvs_permissions
+        $results = Movabls_Data::data_query("SELECT permissions_id FROM mvs_permissions
                                 WHERE movabl_type = '$movabl_type'
                                 AND movabl_guid $guid
                                 AND permission_type = '$permission_type'
@@ -91,7 +91,7 @@ return true;
 
             //Get all the movabls that previously inherited permissions
             $guid = empty($escaped_data['movabl_GUID']) ? "IS NULL" : "= '".$escaped_data['movabl_GUID']."'";
-            $results = $mvsdb->query("SELECT movabl_type,movabl_GUID FROM mvs_permissions WHERE inheritance_type = '{$escaped_data['movabl_type']}' AND inheritance_GUID $guid");
+            $results = Movabls_Data::data_query("SELECT movabl_type,movabl_GUID FROM mvs_permissions WHERE inheritance_type = '{$escaped_data['movabl_type']}' AND inheritance_GUID $guid");
             while ($row = $results->fetch_assoc())
                 $old_children[] = $row;
             $results->free();
@@ -148,7 +148,7 @@ return true;
             $guidstring = "IS NULL";
 
         //Get the relevant existing permissions and put them into the old data array
-        $results = $mvsdb->query("SELECT * FROM mvs_permissions
+        $results = Movabls_Data::data_query("SELECT * FROM mvs_permissions
                                 WHERE movabl_type = '{$escaped_data['movabl_type']}'
                                 AND movabl_GUID $guidstring
                                 AND group_id IN ($groupstring)
@@ -215,42 +215,42 @@ return true;
 
         switch ($escaped_data['movabl_type']) {
             case 'site':
-                $results = $mvsdb->query("SELECT media_GUID FROM mvs_media");
+                $results = Movabls_Data::data_query("SELECT media_GUID FROM mvs_media");
                 while ($row = $results->fetch_assoc())
                     $extras[] = array('movabl_type'=>'media','movabl_GUID'=>$row['media_GUID']);
                 $results->free();
-                $results = $mvsdb->query("SELECT function_GUID FROM mvs_functions");
+                $results = Movabls_Data::data_query("SELECT function_GUID FROM mvs_functions");
                 while ($row = $results->fetch_assoc())
                     $extras[] = array('movabl_type'=>'function','movabl_GUID'=>$row['function_GUID']);
                 $results->free();
-                $results = $mvsdb->query("SELECT interface_GUID FROM mvs_interfaces");
+                $results = Movabls_Data::data_query("SELECT interface_GUID FROM mvs_interfaces");
                 while ($row = $results->fetch_assoc())
                     $extras[] = array('movabl_type'=>'interface','movabl_GUID'=>$row['interface_GUID']);
                 $results->free();
-                $results = $mvsdb->query("SELECT place_GUID FROM mvs_places");
+                $results = Movabls_Data::data_query("SELECT place_GUID FROM mvs_places");
                 while ($row = $results->fetch_assoc())
                     $extras[] = array('movabl_type'=>'place','movabl_GUID'=>$row['place_GUID']);
                 $results->free();
-                $results = $mvsdb->query("SELECT package_GUID FROM mvs_packages");
+                $results = Movabls_Data::data_query("SELECT package_GUID FROM mvs_packages");
                 while ($row = $results->fetch_assoc())
                     $extras[] = array('movabl_type'=>'package','movabl_GUID'=>$row['package_GUID']);
                 $results->free();
                 break;
             case 'place':
-                $results = $mvsdb->query("SELECT media_GUID,interface_GUID FROM mvs_places WHERE place_GUID = '{$escaped_data['movabl_GUID']}'");
+                $results = Movabls_Data::data_query("SELECT media_GUID,interface_GUID FROM mvs_places WHERE place_GUID = '{$escaped_data['movabl_GUID']}'");
                 $row = $results->fetch_assoc();
                 $extras = Movabls::get_submovabls('place',$row);
                 $results->free();
                 break;
             case 'interface':
-                $results = $mvsdb->query("SELECT content FROM mvs_interfaces WHERE interface_GUID = '{$escaped_data['movabl_GUID']}'");
+                $results = Movabls_Data::data_query("SELECT content FROM mvs_interfaces WHERE interface_GUID = '{$escaped_data['movabl_GUID']}'");
                 $row = $results->fetch_assoc();
                 $row['content'] = json_decode($row['content'],true);
                 $extras = Movabls::get_submovabls('interface',$row);
                 $results->free();
                 break;
             case 'package':
-                $results = $mvsdb->query("SELECT contents FROM mvs_packages WHERE package_GUID = '{$escaped_data['movabl_GUID']}'");
+                $results = Movabls_Data::data_query("SELECT contents FROM mvs_packages WHERE package_GUID = '{$escaped_data['movabl_GUID']}'");
                 $row = $results->fetch_assoc();
                 $row['contents'] = json_decode($row['contents'],true);
                 $extras = Movabls::get_submovabls('package',$row);
@@ -323,7 +323,7 @@ return true;
             $mvsdb = self::db_link();
 
         //Reset this movabl with its current permissions
-        $results = $mvsdb->query("SELECT * FROM mvs_permissions
+        $results = Movabls_Data::data_query("SELECT * FROM mvs_permissions
                                   WHERE movabl_type = '$movabl_type'
                                   AND movabl_guid = '$movabl_guid'
                                   AND inheritance_type IS NULL");
@@ -350,7 +350,7 @@ return true;
         //Now set all of the parents
         $movabl_type = $mvsdb->real_escape_string($movabl_type);
         $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
-        $results = $mvsdb->query("SELECT * FROM mvs_permissions
+        $results = Movabls_Data::data_query("SELECT * FROM mvs_permissions
                                   WHERE movabl_type = '$movabl_type'
                                   AND movabl_GUID = '$movabl_guid'
                                   AND inheritance_type IS NOT NULL");
@@ -409,7 +409,7 @@ return true;
         else
             $guid = "= '".$mvsdb->real_escape_string($movabl_guid)."'";
 
-        $results = $mvsdb->query("SELECT * FROM mvs_permissions
+        $results = Movabls_Data::data_query("SELECT * FROM mvs_permissions
                                   WHERE movabl_type = '$movabl_type'
                                   AND movabl_GUID $guid
                                   AND group_id IN ('".implode("','",$groups)."')");
@@ -437,7 +437,7 @@ return true;
         if (empty($mvsdb))
             $mvsdb = self::db_link();
 
-        $results = $mvsdb->query("SELECT * FROM `{$GLOBALS->_SERVER['DATABASE']}`.mvs_groups");
+        $results = Movabls_Data::data_query("SELECT * FROM `{$GLOBALS->_SERVER['DATABASE']}`.mvs_groups");
         while($row = $results->fetch_assoc())
             $return[] = $row;
         $results->free();

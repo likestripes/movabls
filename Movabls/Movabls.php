@@ -15,7 +15,7 @@ class Movabls {
 
         $permissions = self::join_permissions('package');
 
-        $result = $mvsdb->query("SELECT x.package_id,x.package_GUID FROM `mvs_packages` AS x $permissions");
+        $result = Movabls_Data::data_query("SELECT x.package_id,x.package_GUID FROM `mvs_packages` AS x $permissions");
         if(empty($result))
             return array();
 
@@ -173,7 +173,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
 
         $permissions = self::join_permissions('package',$where);
 
-        $result = $mvsdb->query("SELECT * FROM mvs_packages x $permissions");
+        $result = Movabls_Data::data_query("SELECT * FROM mvs_packages x $permissions");
         
         //Add package elements to the index array
         while ($row = $result->fetch_assoc()) {
@@ -200,7 +200,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
             }
             if (!empty($places)) {
                 $places_string = "'".implode("','",$places)."'";
-                $result = $mvsdb->query("SELECT * FROM mvs_places WHERE place_GUID IN ($places_string)");
+                $result = Movabls_Data::data_query("SELECT * FROM mvs_places WHERE place_GUID IN ($places_string)");
                 if ($result->num_rows == 0) {
                     foreach ($places as $guid)
                         unset($index['places'][$guid]);
@@ -223,7 +223,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
             }
             if (!empty($interfaces)) {
                 $interfaces_string = "'".implode("','",$interfaces)."'";
-                $result = $mvsdb->query("SELECT * FROM mvs_interfaces WHERE interface_GUID IN ($interfaces_string)");
+                $result = Movabls_Data::data_query("SELECT * FROM mvs_interfaces WHERE interface_GUID IN ($interfaces_string)");
                 if ($result->num_rows == 0) {
                     foreach ($interfaces as $guid)
                         unset($index['interfaces'][$guid]);
@@ -319,21 +319,21 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
         $categorized = self::get_packages_content();
 
         $permissions = self::join_permissions('media');
-        $result = $mvsdb->query("SELECT media_GUID FROM mvs_media AS x $permissions");
+        $result = Movabls_Data::data_query("SELECT media_GUID FROM mvs_media AS x $permissions");
         while($row = $result->fetch_assoc()) {
             if (!isset($categorized['media'][$row['media_GUID']]))
                 self::add_item_to_index($index,'media',$row['media_GUID']);
         }
 
         $permissions = self::join_permissions('function');
-        $result = $mvsdb->query("SELECT function_GUID FROM mvs_functions AS x $permissions");
+        $result = Movabls_Data::data_query("SELECT function_GUID FROM mvs_functions AS x $permissions");
         while($row = $result->fetch_assoc()) {
             if (!isset($categorized['functions'][$row['function_GUID']]))
                 self::add_item_to_index($index,'function',$row['function_GUID']);
         }
 
         $permissions = self::join_permissions('interface');
-        $result = $mvsdb->query("SELECT * FROM mvs_interfaces AS x $permissions");
+        $result = Movabls_Data::data_query("SELECT * FROM mvs_interfaces AS x $permissions");
         while($row = $result->fetch_assoc()) {
             if (!isset($categorized['interfaces'][$row['interface_GUID']])) {
                 $row['content'] = json_decode($row['content'],true);
@@ -342,7 +342,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
         }
 
         $permissions = self::join_permissions('place');
-        $result = $mvsdb->query("SELECT * FROM mvs_places AS x $permissions");
+        $result = Movabls_Data::data_query("SELECT * FROM mvs_places AS x $permissions");
         while($row = $result->fetch_assoc()) {
             if (!isset($categorized['places'][$row['place_GUID']])) {
                 $row['inputs'] = json_decode($row['inputs']);
@@ -410,7 +410,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
 
         $table = self::table_name($movabl_type);
             
-        $result = $mvsdb->query("SELECT x.* FROM `mvs_$table` AS x WHERE x.{$movabl_type}_GUID = '$movabl_guid'");
+        $result = Movabls_Data::data_query("SELECT x.* FROM `mvs_$table` AS x WHERE x.{$movabl_type}_GUID = '$movabl_guid'");
 
         if (empty($result))
             throw new Exception ("Movabl ($movabl_type: $movabl_guid) not found",500);
@@ -493,7 +493,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
 
         $query .= ' '.self::join_permissions('meta',$where);
 
-        $result = $mvsdb->query($query);
+        $result = Movabls_Data::data_query($query);
 
         if (empty($result))
             return $meta;
@@ -550,7 +550,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
 
         $query .= ' '.self::join_permissions('meta',$where);
 
-        $result = $mvsdb->query($query);
+        $result = Movabls_Data::data_query($query);
 
         if (empty($result))
             return $meta;
@@ -624,12 +624,12 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
 
         if (!empty($movabl_guid)) {
             $datastring = self::generate_datastring('update',$data);
-            $result = $mvsdb->query("UPDATE `mvs_$table` SET $datastring WHERE {$sanitized_type}_GUID = '$sanitized_guid'");
+            $result = Movabls_Data::data_query("UPDATE `mvs_$table` SET $datastring WHERE {$sanitized_type}_GUID = '$sanitized_guid'");
         }
         else {
             $data["{$movabl_type}_guid"] = self::generate_guid($movabl_type);
             $datastring = self::generate_datastring('insert',$data);
-            $result = $mvsdb->query("INSERT INTO `mvs_$table` $datastring");
+            $result = Movabls_Data::data_query("INSERT INTO `mvs_$table` $datastring");
             $movabl_guid = $data["{$movabl_type}_guid"];
             //If it's new, we need to give it permissions that pertain to the site
             Movabls_Permissions::add_site_permissions($movabl_type,$movabl_guid,$mvsdb);
@@ -886,7 +886,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
         $sanitized_type = $mvsdb->real_escape_string($movabl_type);
 
-        $result = $mvsdb->query("DELETE FROM `mvs_$table` WHERE {$sanitized_type}_GUID = '$sanitized_guid'");
+        $result = Movabls_Data::data_query("DELETE FROM `mvs_$table` WHERE {$sanitized_type}_GUID = '$sanitized_guid'");
 
         self::set_meta(array(),$movabl_type,$movabl_guid,$mvsdb);
         self::set_tags_meta(array(),$movabl_type,$movabl_guid,$mvsdb);

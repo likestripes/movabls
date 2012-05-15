@@ -42,7 +42,7 @@ class Movabls_Session {
         if (!isset($type))
             return;
             
-        $results = $mvsdb->query("SELECT * FROM mvs_sessions
+        $results = Movabls_Data::data_query("SELECT * FROM mvs_sessions
                                   WHERE {$type}session = '$session'");
         if ($results->num_rows > 0) {
             $session = $results->fetch_assoc();
@@ -60,14 +60,14 @@ class Movabls_Session {
                 self::set_cookie($type.'session', $session[$type.'session'], $session['term']);
 
                 //Create $_SESSION array
-                $results = $mvsdb->query("SELECT `key`,`value` FROM mvs_sessiondata
+                $results = Movabls_Data::data_query("SELECT `key`,`value` FROM mvs_sessiondata
                                           WHERE session_id = {$session['session_id']}");
                 while ($row = $results->fetch_assoc())
                     $_SESSION[$row['key']] = json_decode($row['value'],true);
                 $results->free();
                 
                 //Create $_USER array
-                $results = $mvsdb->query("SELECT * FROM `mvs_users`
+                $results = Movabls_Data::data_query("SELECT * FROM `mvs_users`
                                           WHERE user_id = {$session['user_id']}");
                 if ($mvsdb->errno)
                     throw new Exception('MYSQL Error: '.$mvsdb->error,500);
@@ -77,7 +77,7 @@ class Movabls_Session {
                 $results->free();
                 
                 //Add $_USER['groups']
-                $results = $mvsdb->query("SELECT DISTINCT group_id FROM `mvs_group_memberships`
+                $results = Movabls_Data::data_query("SELECT DISTINCT group_id FROM `mvs_group_memberships`
                                           WHERE user_id = {$session['user_id']}");
                 if ($mvsdb->errno)
                     throw new Exception('MYSQL Error: '.$mvsdb->error,500);
@@ -152,7 +152,7 @@ class Movabls_Session {
 
         //To determine session term, take the term settings for each of the
         //user's groups and use the shortest term
-        $results = $mvsdb->query("SELECT MIN(g.session_term) AS term FROM `mvs_groups` g
+        $results = Movabls_Data::data_query("SELECT MIN(g.session_term) AS term FROM `mvs_groups` g
                                   INNER JOIN `mvs_group_memberships` m ON g.group_id = m.group_id
                                   WHERE m.user_id = $user_id AND g.session_term != 'NULL'");
         if ($mvsdb->errno)

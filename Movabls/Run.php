@@ -25,20 +25,22 @@ class Movabls_Run {
 try {
   
           //Get database handle
-	//		include ('config.inc.php');
-         //   $this->mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
+			include ('config.inc.php');
+            $this->mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
 //	    print_r($this->mvsdb);
             //Get session
             //Movabls_Session::get_session($this->mvsdb);
-	    $q = Movabls_Data::data_query("SELECT * from mvs_functions",DATA_ARRAY);
-	
-	var_dump($q);
+	//    $result = Movabls_Data::data_query("SELECT * from mvs_functions");
+//	while ($row = $q->fetch_assoc()) {
+	//print_r($row);
+	//}
+	//var_dump($q);
             //Run it!
-//            print_r($this->run_place());
+            print_r($this->run_place());
 
         }
         catch (Exception $e) {
-echo "dsf";
+
 		print_r($e);
 		$this->error_handler('Exception',$e->getMessage(),$e->getFile(),$e->getLine(),$e->getCode());
         }
@@ -113,7 +115,7 @@ echo "dsf";
             $error_place = '';
         else
             $error_place = 'AND url != "%"';
-        $result = $this->mvsdb->query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM `mvs_places`
+        $result = Movabls_Data::data_query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM `mvs_places`
                    				   WHERE ('$url' LIKE url  OR '$url/' LIKE url )
  $error_place");
 
@@ -244,7 +246,7 @@ echo "dsf";
 		
 		        if (!isset($this->interfaces->$interface_GUID)) {
 				$interface_GUID = $this->mvsdb->real_escape_string($interface_GUID);
-				$result = $this->mvsdb->query("SELECT content FROM mvs_interfaces WHERE interface_GUID = '$interface_GUID'");
+				$result = Movabls_Data::data_query("SELECT content FROM mvs_interfaces WHERE interface_GUID = '$interface_GUID'");
 				$interface_obj = $result->fetch_object();
 				$result->free();
 				if (empty($interface_obj))
@@ -316,7 +318,7 @@ echo "dsf";
             $media[] = $this->mvsdb->real_escape_string($key);
         $media = '"'.implode('","',$media).'"';
 
-        $result = $this->mvsdb->query("SELECT media_GUID,inputs,mimetype,content FROM mvs_media
+        $result = Movabls_Data::data_query("SELECT media_GUID,inputs,mimetype,content FROM mvs_media
                                        WHERE media_GUID IN ($media)");
         if ($result->num_rows == 0)
             throw new Exception ("No Media Found",500);
@@ -371,7 +373,7 @@ echo "dsf";
                 $functions[] = $this->mvsdb->real_escape_string($key);
             $functions = '"'.implode('","',$functions).'"';
 
-            $result = $this->mvsdb->query("SELECT function_GUID,inputs,content FROM mvs_functions
+            $result = Movabls_Data::data_query("SELECT function_GUID,inputs,content FROM mvs_functions
                                            WHERE function_GUID IN ($functions)");
             if ($result->num_rows == 0)
                 throw new Exception ("Functions Not Found",500);
@@ -410,7 +412,7 @@ echo "dsf";
                 $places[] = $this->mvsdb->real_escape_string($key);
             $places = '"'.implode('","',$places).'"';
 
-            $result = $this->mvsdb->query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM mvs_places
+            $result = Movabls_Data::data_query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM mvs_places
                                            WHERE place_GUID IN ($places)");
             if ($result->num_rows == 0)
                 throw new Exception ("Places Not Found",500);
@@ -611,7 +613,7 @@ echo "dsf";
      * @return true
      */
     public function error_handler ($errno, $errstr, $errfile = '', $errline = '', $http_status = 200) {
-
+//echo $errstr;  echo $errfile; echo $errline;
         //TODO: Echo out warnings and notices?
         //TODO: Syntax should be checked by the API or the IDE, since syntax errors will not give line numbers
 
@@ -627,6 +629,7 @@ echo "dsf";
 
             case E_ERROR:
             case E_USER_ERROR:
+            echo "err: $errstr $errfile $errline";
                 $GLOBALS->add_error('PHP Error',true,$errstr,$errline,$errfile,$this->stack->get(),500);
                 break;
 
@@ -643,10 +646,12 @@ echo "dsf";
                 break;
 
             case 'Exception':
+            echo "exception: $errstr $errfile $errline";
                 $GLOBALS->add_error('Uncaught Exception',true,$errstr,$errline,$errfile,$this->stack->get(),$http_status);
                 break;
 
             default:
+          //  echo "unknown: $errstr $errfile $errline";
                 $GLOBALS->add_error('PHP Unknown',false,$errstr,$errline,$errfile,$this->stack->get(),$http_status);
                 return true;
                 break;
