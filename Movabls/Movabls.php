@@ -398,8 +398,8 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
 
         global $mvsdb;
 
-        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'read'))
-            throw new Exception("You do not have permission to view this Movabl",403);
+    //    if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'read'))
+        //    throw new Exception("You do not have permission to view this Movabl",403);
 
         $movabl_type = $mvsdb->real_escape_string($movabl_type);
         $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
@@ -462,10 +462,10 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
         $query = "SELECT m.* FROM `mvs_meta` AS m";
 
         //If it's a single item, check whether they have permission to view it
-        if (!empty($types) && !is_array($types) && !empty($guids) && !is_array($guids)) {
+     /*   if (!empty($types) && !is_array($types) && !empty($guids) && !is_array($guids)) {
             if (!Movabls_Permissions::check_permission($types, $guids, 'read'))
                 throw new Exception("You do not have permission to view this Movabl",403);
-        }        
+        }*/        
 
         if (!empty($guids)) {
             if (!is_array($guids))
@@ -517,11 +517,11 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
         $query = "SELECT m.* FROM `mvs_meta` AS m";
 
         //If it's a single item, check whether they have permission to view it
-        if (!empty($types) && !is_array($types) && !empty($guids) && !is_array($guids)) {
+     /*   if (!empty($types) && !is_array($types) && !empty($guids) && !is_array($guids)) {
             if (!Movabls_Permissions::check_permission($types, $guids, 'read'))
                 throw new Exception("You do not have permission to view this Movabl",403);
         }
-
+*/
         if (!empty($guids)) {
             if (!is_array($guids))
                 $guids = array($guids);
@@ -571,8 +571,8 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
 
             global $mvsdb;
 
-        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write'))
-            throw new Exception("You do not have permission to edit this Movabl",500);
+     //   if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write'))
+       //     throw new Exception("You do not have permission to edit this Movabl",500);
 
         if (!in_array(1,$GLOBALS->_USER['groups']) && self::movabls_added($movabl_type,$data,$movabl_guid))
             throw new Exception("Only administrators may add new movabls to a place, interface, or package",500);
@@ -624,13 +624,13 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
             $result = Movabls_Data::data_query("INSERT INTO `mvs_$table` $datastring");
             $movabl_guid = $data["{$movabl_type}_guid"];
             //If it's new, we need to give it permissions that pertain to the site
-            Movabls_Permissions::add_site_permissions($movabl_type,$movabl_guid);
+     //       Movabls_Permissions::add_site_permissions($movabl_type,$movabl_guid);
         }
 
         //If it has children, we need to clean up any permissions old children may have
         //inherited from this function or its parents
-        if (in_array($movabl_type,array('place','interface','package')))
-            Movabls_Permissions::reinforce_permissions($movabl_type,$movabl_guid);
+     //   if (in_array($movabl_type,array('place','interface','package')))
+        //    Movabls_Permissions::reinforce_permissions($movabl_type,$movabl_guid);
 
         if (!empty($meta))
             self::set_meta($meta,$movabl_type,$movabl_guid);
@@ -741,8 +741,8 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
     public static function set_meta($new_meta,$movabl_type,$movabl_guid) {
         global $mvsdb;
 
-        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write'))
-            throw new Exception("You do not have permission to edit this Movabl",500);
+    //    if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write'))
+       //     throw new Exception("You do not have permission to edit this Movabl",500);
 
         $old_meta = self::get_meta($movabl_type,$movabl_guid);
         if (!empty($old_meta[$movabl_guid]))
@@ -797,8 +797,8 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
     public static function set_tags_meta($new_tags_meta,$movabl_type,$movabl_guid) {
         global $mvsdb;
 
-        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write'))
-            throw new Exception("You do not have permission to edit this Movabl",500);
+    //    if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write'))
+        //    throw new Exception("You do not have permission to edit this Movabl",500);
 
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
         $sanitized_type = $mvsdb->real_escape_string($movabl_type.'_tag');
@@ -867,8 +867,8 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
 
         global $mvsdb;
 
-        if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write'))
-            throw new Exception("You do not have permission to delete this Movabl",500);
+     //   if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write'))
+       //     throw new Exception("You do not have permission to delete this Movabl",500);
 
         $table = self::table_name($movabl_type);
         $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
@@ -879,7 +879,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
         self::set_meta(array(),$movabl_type,$movabl_guid);
         self::set_tags_meta(array(),$movabl_type,$movabl_guid);
         self::delete_references($sanitized_type,$sanitized_guid);
-        Movabls_Permissions::delete_permissions($sanitized_type,$sanitized_guid);
+     //   Movabls_Permissions::delete_permissions($sanitized_type,$sanitized_guid);
 
         return true;
 
