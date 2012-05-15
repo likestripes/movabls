@@ -11,8 +11,8 @@ class Movabls_Session {
      * @global array $_USER
      * @global array $_SESSION
      */
-    public static function get_session($mvsdb = null) {
-
+    public static function get_session() {
+        global $mvsdb;
         //This code can only be called in bootstrapping before $GLOBALS is created
         if (!empty($GLOBALS->_USER))
             return;
@@ -20,9 +20,6 @@ class Movabls_Session {
         global $_USER,$_SESSION;
         $_USER = array();
         $_SESSION = array();
-
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
 
         //Approx every 10000 requests, delete expired sessions
         if (mt_rand(1,10000) == 14)
@@ -55,7 +52,7 @@ class Movabls_Session {
             else {
                 //Update expiration times
                 $expiration = date('Y-m-d H:i:s',time()+$session['term']);
-                $mvsdb->query("UPDATE mvs_sessions SET expiration = '$expiration'
+                Movabls_Data::data_query("UPDATE mvs_sessions SET expiration = '$expiration'
                                WHERE session_id = {$session['session_id']}");
                 self::set_cookie($type.'session', $session[$type.'session'], $session['term']);
 
@@ -100,19 +97,18 @@ class Movabls_Session {
      * @param mixed $value
      */
     public static function set($key,$value) {
-
-        $mvsdb = self::db_link();
+        global $mvsdb;
 
         $key = $mvsdb->real_escape_string($key);
         $value = json_encode($value);
 
         if (isset($GLOBALS->_SESSION[$key])) {
-            $mvsdb->query("UPDATE mvs_sessiondata SET value = '$value'
+            Movabls_Data::data_query("UPDATE mvs_sessiondata SET value = '$value'
                            WHERE session_id = {$GLOBALS->_USER['session_id']}
                            AND key = '$key'");
         }
         else {
-            $mvsdb->query("INSERT INTO mvs_sessiondata (session_id,key,value)
+            Movabls_Data::data_query("INSERT INTO mvs_sessiondata (session_id,key,value)
                            VALUES ({$GLOBALS->_USER['session_id']},'$key','$value')");
         }
         $GLOBALS->set_session_data($key,$value);
@@ -125,7 +121,7 @@ class Movabls_Session {
      */
     public static function delete($key) {
 
-        $mvsdb->query("DELETE mvs_sessiondata
+        Movabls_Data::data_query("DELETE mvs_sessiondata
                        WHERE session_id = {$GLOBALS->_USER['session_id']}
                        AND key = '$key'");
         $GLOBALS->set_session_data($key,null);
@@ -137,10 +133,8 @@ class Movabls_Session {
      * @param int $user_id
      * @param mysqli handle $mvsdb
      */
-    public static function create_session($user_id,$mvsdb = null) {
-
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
+    public static function create_session($user_id) {
+        global $mvsdb;
 
         //TODO: Uncomment this when you have HTTPS set up
         //if (!$GLOBALS->_SERVER['HTTPS'])
@@ -167,7 +161,7 @@ class Movabls_Session {
 
         $expiration = date('Y-m-d H:i:s',time()+$term);
 
-        $mvsdb->query("INSERT INTO mvs_sessions (sslsession,httpsession,user_id,term,expiration)
+        Movabls_Data::data_query("INSERT INTO mvs_sessions (sslsession,httpsession,user_id,term,expiration)
                        VALUES ('$sslsession','$httpsession',$user_id,$term,'$expiration')");
 
         self::set_cookie('sslsession', $sslsession, $term);
@@ -205,14 +199,12 @@ class Movabls_Session {
      * @param int $session_id
      * @param mysqli handle $mvsdb
      */
-    public static function delete_session($session_id = null,$mvsdb = null) {
-        
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
+    public static function delete_session($session_id = null) {
+        global $mvsdb;
 
         if (!empty($session_id)) {
-            $mvsdb->query("DELETE FROM mvs_sessions WHERE session_id = $session_id");
-            $mvsdb->query("DELETE FROM mvs_sessiondata WHERE session_id = $session_id");
+            Movabls_Data::data_query("DELETE FROM mvs_sessions WHERE session_id = $session_id");
+            Movabls_Data::data_query("DELETE FROM mvs_sessiondata WHERE session_id = $session_id");
         }
 
         self::remove_cookies();
@@ -233,33 +225,15 @@ class Movabls_Session {
      * Runs through the database and deletes expired sessions
      * @param mysqli_handle $mvsdb
      */
-    private static function delete_expired_sessions($mvsdb = null) {
+    private static function delete_expired_sessions() {
+        global $mvsdb;
 
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
-
-        $mvsdb->query("DELETE FROM mvs_sessiondata d
+        Movabls_Data::data_query("DELETE FROM mvs_sessiondata d
                        INNER JOIN mvs_sessions s ON d.session_id = s.session_id
                        WHERE s.expires < NOW()");
-        $mvsdb->query("DELETE FROM mvs_sessions WHERE expiration < NOW()");
+        Movabls_Data::data_query("DELETE FROM mvs_sessions WHERE expiration < NOW()");
 
     }
 
-    /**
-     * Gets the handle to access the database
-     * @return mysqli handle
-     */
-    private static function db_link() {
-		
-		include ('config.inc.php');
-        $mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
-		
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
-        return $mvsdb;
-
-    }
 
 }
