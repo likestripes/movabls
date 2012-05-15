@@ -13,10 +13,8 @@ class Movabls_Users {
      * @param mysqli handle $mvsdb
      * @return user_id
      */
-    public static function create($password,$userfields,$mvsdb = null) {
-
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
+    public static function create($password,$userfields) {
+        global $mvsdb;
 
         $nonce = self::generate_nonce();
         $password = self::generate_password($password, $nonce);
@@ -31,53 +29,32 @@ class Movabls_Users {
             $fieldvalues = ",'".implode("','",array_values($fields))."'";
         }
 
-        $mvsdb->query("INSERT INTO `mvs_users` (user_id,password,nonce$fieldnames)
+        Movabls_Data::data_query("INSERT INTO `mvs_users` (user_id,password,nonce$fieldnames)
                        VALUES ('','$password','$nonce'$fieldvalues)");
 
-					//   echo $mvsdb->errno;
         if ($mvsdb->errno)
-			return $mvsdb->error;
-           // throw new Exception('MYSQL Error: '.$mvsdb->error,500);
+			throw new Exception('MYSQL Error: '.$mvsdb->error,500);
         else
             return $mvsdb->insert_id;
-
     }
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	  public static function create_group($group_name, $session_term,$mvsdb = null) {
 
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
+	
+	  public static function create_group($group_name, $session_term) {
+        global $mvsdb;
 
-        $mvsdb->query("INSERT INTO `mvs_groups` (group_id,name,session_term)
+
+        Movabls_Data::data_query("INSERT INTO `mvs_groups` (group_id,name,session_term)
                        VALUES ('','$group_name','$session_term')");
 
-					//   echo $mvsdb->errno;
         if ($mvsdb->errno)
-			return $mvsdb->error;
-           // throw new Exception('MYSQL Error: '.$mvsdb->error,500);
+			throw new Exception('MYSQL Error: '.$mvsdb->error,500);
         else
             $group_id =  $mvsdb->insert_id;
-			
 			
 	$mvsdb->query("INSERT INTO  `mvs_group_memberships` ( `user_id` ,`group_id` ) VALUES ('6',  '$group_id' );");
 			return $group_id;
 
     }
-	
-	
-	
-	
-	
-	
-	
 	
 
     /**
@@ -86,14 +63,9 @@ class Movabls_Users {
      * @param string $value = value of that unique field for this user
      * @param string $password = the password the user entered
      */
-    public static function login($field,$value,$password,$mvsdb = null) {
-
+    public static function login($field,$value,$password) {
+        global $mvsdb;
         if (isset($GLOBALS->_USER['session_id'])) self::logout();
-//echo "sdf";
-		//            throw new Exception("Already logged in.  Log out before logging in again.", 500);
-
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
 
         $field = $mvsdb->real_escape_string($field);
         $value = $mvsdb->real_escape_string($value);
@@ -114,21 +86,20 @@ class Movabls_Users {
 
         if (self::generate_password($password,$user['nonce']) != $user['password']) {
             //throw new Exception ("Incorrect $field - password combination",500);
-return false;
+		return false;
 			}else{
             Movabls_Session::create_session($user['user_id'],$mvsdb);
 		return true;
 		}
     }
 
+    
     /**
      * Public wrapper function to destroy the current user's session
      */
     public static function logout() {
-
         $session_id = $GLOBALS->_USER['session_id'];
         Movabls_Session::delete_session($session_id);
-
     }
 
     /**
@@ -137,16 +108,14 @@ return false;
      * @param string $password
      * @param mysqli handle $mvsdb
      */
-    public static function change_password($user_id,$password,$mvsdb = null) {
-
-        if (empty($mvsdb))
-            $mvsdb = self::db_link();
+    public static function change_password($user_id,$password) {
+        global $mvsdb;
 
         $user_id = $mvsdb->real_escape_string($user_id);
         $nonce = self::generate_nonce();
         $password = self::generate_password($password, $nonce);
 
-        $mvsdb->query("UPDATE `mvs_users` SET password = '$password',nonce = '$nonce'
+        Movabls_Data::data_query("UPDATE `mvs_users` SET password = '$password',nonce = '$nonce'
                        WHERE user_id = $user_id");
 
         if ($mvsdb->errno)
@@ -157,41 +126,39 @@ return false;
 	
 	
 	public static function get_users() {
-
-        $mvsdb = self::db_link();
+        global $mvsdb;
 
         $result = Movabls_Data::data_query("SELECT g.group_id, g.name, g.session_term, u.email, u.user_id FROM `mvs_users` u
 LEFT JOIN `mvs_group_memberships` gm ON u.user_id= gm.user_id
 LEFT JOIN `mvs_groups` g ON gm.group_id= g.group_id" );
+
         if(empty($result))
             return array();
-$users=Array();
-      
+        
+        $users=Array();
 	   
-	  while ($row = $result->fetch_assoc()) {
-	   if(!isset($users[$row["user_id"] ][$row["group_id"] ]["email"]) )$users[$row["user_id"] ]["email"] = $row["email"];
-           $users[$row["user_id"] ][$row["group_id"] ]=$row;
-		  
+        while ($row = $result->fetch_assoc()) {
+            if(!isset($users[$row["user_id"] ][$row["group_id"] ]["email"]) )
+                $users[$row["user_id"] ]["email"] = $row["email"];
+            
+            $users[$row["user_id"] ][$row["group_id"] ]=$row;
         }
 
-
         $result->free();
-
         return $users;
 
     }
 	
 	
 	public static function get_groups() {
-
-        $mvsdb = self::db_link();
+        global $mvsdb;
 
         $result = Movabls_Data::data_query("SELECT g.group_id, g.name, g.session_term, u.email, u.user_id FROM `mvs_groups` g
 LEFT JOIN `mvs_group_memberships` gm ON g.group_id= gm.group_id
 INNER JOIN `mvs_users` u ON gm.user_id= u.user_id" );
         if(empty($result))
             return array();
-$groups=Array();
+	  $groups=Array();
       
 	  while ($row = $result->fetch_assoc()) {
 	   if(!isset($groups[$row["group_id"] ]["group_id"]) )$groups[$row["group_id"] ]["group_id"] = $row["group_id"];
@@ -207,18 +174,6 @@ $groups=Array();
 
     }
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
     /**
      * Generates a password hash from a password and nonce
@@ -237,24 +192,7 @@ $groups=Array();
      * @return string
      */
     private static function generate_nonce() {
-
         return md5(mt_rand());
-
-    }
-
-    /**
-     * Gets the handle to access the database
-     * @return mysqli handle
-     */
-    private static function db_link() {
-		include ('config.inc.php');
-        $mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
-        return $mvsdb;
-
     }
 
 }
