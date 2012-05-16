@@ -126,7 +126,6 @@ class Movabls_Users {
 	
 	
 	public static function get_users() {
-        global $mvsdb;
 
         $result = Movabls_Data::data_query("SELECT g.group_id, g.name, g.session_term, u.email, u.user_id FROM `mvs_users` u
 LEFT JOIN `mvs_group_memberships` gm ON u.user_id= gm.user_id
@@ -151,7 +150,6 @@ LEFT JOIN `mvs_groups` g ON gm.group_id= g.group_id" );
 	
 	
 	public static function get_groups() {
-        global $mvsdb;
 
         $result = Movabls_Data::data_query("SELECT g.group_id, g.name, g.session_term, u.email, u.user_id FROM `mvs_groups` g
 LEFT JOIN `mvs_group_memberships` gm ON g.group_id= gm.group_id

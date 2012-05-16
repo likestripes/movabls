@@ -9,7 +9,7 @@ define('DATA_ARRAY',2);
  * @author Travis Donia
  */
 class Movabls_Data {
-/*function __construct() {
+/* function __construct() {
 
 	include ('config.inc.php');
         $mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
@@ -64,7 +64,7 @@ try{
      * Gets the handle to access the database
      * @return mysqli handle 
      */
-    private static function db_link() {
+    public static function db_link() {
     global $mvsdb;
     if (!is_object($mvsdb)):
 	include ('config.inc.php');

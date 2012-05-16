@@ -14,6 +14,8 @@ class Movabls_Permissions {
      * @param mysqli handle $mvsdb
      */
     public static function check_permission($movabl_type,$movabl_guid,$permission_type) {
+     global $mvsdb;
+
 return true;
 /*        if (in_array(1,$GLOBALS->_USER['groups']))
             return true;
@@ -22,8 +24,7 @@ return true;
             return false;
 
         
-            global $mvsdb;
-
+           
         $movabl_type = $mvsdb->real_escape_string($movabl_type);
         $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
         foreach ($GLOBALS->_USER['groups'] as $k => $group)
@@ -84,7 +85,7 @@ return true;
         
             global $mvsdb;
 
-        $escaped_data = self::escape_data($movabl_type,$movabl_guid,$groups,$inheritance_type,$inheritance_GUID,$mvsdb);
+        $escaped_data = self::escape_data($movabl_type,$movabl_guid,$groups,$inheritance_type,$inheritance_GUID);
 
         //Set the permissions of all the children of this movabl
         if (empty($inheritance_type)) {
@@ -96,7 +97,7 @@ return true;
                 $old_children[] = $row;
             $results->free();
             //Get and set movabls that now inherit permissions
-            $new_children = self::set_children($escaped_data,true,$mvsdb);
+            $new_children = self::set_children($escaped_data,true);
             
             //Remove permissions for old_children that are not in the new_children array
             if (!empty($old_children)) {
@@ -113,7 +114,7 @@ return true;
 
         }
         else
-            $new_children = self::set_children($escaped_data,false,$mvsdb);
+            $new_children = self::set_children($escaped_data,false);
         
         //Prepare the new data array to set this movabl
         $groupstring = array();
@@ -295,7 +296,7 @@ return true;
         $movabl_type = $mvsdb->real_escape_string($movabl_type);
         $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
 
-        $current = self::get_permissions('site',null,null,$mvsdb);
+        $current = self::get_permissions('site',null,null);
 
         foreach ($current as $group_id => $permissions) {
             $groups[] = array(
@@ -345,7 +346,7 @@ return true;
             $current = array();
 
         $results->free();
-        self::set_permission($movabl_type,$movabl_guid,$current,null,null,$mvsdb);
+        self::set_permission($movabl_type,$movabl_guid,$current,null,null);
 
         //Now set all of the parents
         $movabl_type = $mvsdb->real_escape_string($movabl_type);
@@ -373,7 +374,7 @@ return true;
         if (!empty($parents)) {
             foreach ($parents as $key => $groups) {
                 $key = unserialize($key);
-                self::set_permission($key[0],$key[1],array_values($groups),null,null,$mvsdb);
+                self::set_permission($key[0],$key[1],array_values($groups),null,null);
             }
         }
 
@@ -454,7 +455,7 @@ return true;
      */
     public static function delete_permissions($movabl_type,$movabl_guid) {
 
-        self::reinforce_permissions($movabl_type,$movabl_guid,$mvsdb);
+        self::reinforce_permissions($movabl_type,$movabl_guid);
 
         
             global $mvsdb;

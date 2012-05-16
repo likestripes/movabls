@@ -622,7 +622,7 @@ try {
 
             case E_ERROR:
             case E_USER_ERROR:
-            echo "err: $errstr $errfile $errline";
+            echo "err: $errstr: [$errfile]/[$errline]";
                 $GLOBALS->add_error('PHP Error',true,$errstr,$errline,$errfile,$this->stack->get(),500);
                 break;
 

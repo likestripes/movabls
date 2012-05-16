@@ -23,6 +23,10 @@ function __autoload($name) {
 //Override all superglobals with read-only variants
 try{
 
+	global $mvsdb;
+	$mvsdb = Movabls_Data::db_link();	
+
+
 	Movabls_Session::get_session();
 	$GLOBALS = new Movabls_Globals();
 
