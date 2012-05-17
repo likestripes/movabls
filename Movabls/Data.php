@@ -28,28 +28,38 @@ class Movabls_Data {
      * @param array
      */
     public static function data_query($query, $return_type=DATA_RESULT, $cacheable=TRUE) {
-	
+	global $mvsdb;
  
 
 	if (strtoupper(substr($query, 0, 6)) != "SELECT")  $cacheable = FALSE;
 try{
 
-	if(!$cacheable):
+	if(!$cacheable || $return_type === DATA_RESULT ):
 	//	echo "no cache";
-	        $mvsdb = self::db_link();
+	       if (!is_object($mvsdb))  $mvsdb = self::db_link();
     	   	$result = $mvsdb->query($query);
+          return  $result;
 	else:
 	//	echo "cache";
-		$mvsdb = self::db_link();
+  $query_md5 = md5($query);
+  $cache_return = self::memcache_get($query_md5);
+  if (!isset($cache_return) || empty($cache_return)):
+		if (!is_object($mvsdb)) $mvsdb = self::db_link();
 		$result = $mvsdb->query($query);
+
+if ($return_type === DATA_OBJECT)
+		$return_value =  $result->fetch_object();
+	elseif ($return_type === DATA_ARRAY)
+		$return_value = $result->fetch_array();
+
+    self::memcache_set($query_md5, $return_value);
+  
+    return $return_value;
+
+  endif;
 	endif;
 	
-	if ($return_type === DATA_RESULT)
-		return  $result;
-	elseif ($return_type === DATA_OBJECT)
-		return  $result->fetch_object();
-	elseif ($return_type === DATA_ARRAY)
-		return $result->fetch_array();
+	
 
     } catch(Exception $e){
     
@@ -58,7 +68,25 @@ try{
     
     }
     
+public static function memcache_get($key) {
+global $mvsmemcache;
+return $mvsmemcache->get($key);
+}
     
+public static function memcache_set($key, $value) {
+global $mvsmemcache;
+$mvsmemcache->set($key, $value);
+return $mvsmemcache->get($key);
+}
+
+public static function memcache_link($server, $bin) {
+global $mvsmemcache;
+    if (!is_object($mvsmemcache)):
+    $mvsmemcache = new Memcached();
+    $mvsmemcache->addServer($server,$bin);
+  endif;
+return $mvsmemcache;
+}
 
     /**
      * Gets the handle to access the database

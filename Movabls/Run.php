@@ -246,8 +246,8 @@ try {
 		
             if (!isset($this->interfaces->$interface_GUID)) {
                 $interface_GUID = $mvsdb->real_escape_string($interface_GUID);
-                $result = Movabls_Data::data_query("SELECT content FROM mvs_interfaces WHERE interface_GUID = '$interface_GUID'");
-                $interface_obj = $result->fetch_object();
+                $interface_obj = Movabls_Data::data_query("SELECT content FROM mvs_interfaces WHERE interface_GUID = '$interface_GUID'", DATA_OBJECT);
+                //$interface_obj = $result->fetch_object();
                 $result->free();
                 if (empty($interface_obj))
                     return null;

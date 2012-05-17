@@ -25,6 +25,7 @@ try{
 
 	global $mvsdb;
 	$mvsdb = Movabls_Data::db_link();	
+	$mvsmemcache = Movabls_Data::memcache_link('mvscache.veiptl.0001.use1.cache.amazonaws.com', 11211);	
 
 
 	Movabls_Session::get_session();
