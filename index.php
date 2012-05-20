@@ -23,9 +23,14 @@ function __autoload($name) {
 //Override all superglobals with read-only variants
 try{
 
-	global $mvsdb;
-	$mvsdb = Movabls_Data::db_link();	
-	$mvsmemcache = Movabls_Data::memcache_link('mvscache.veiptl.0001.use1.cache.amazonaws.com', 11211);	
+	global $mvs_db, $mvs_memcache;
+	$mvs_db = Movabls_Data::db_link();	
+	$memcache_link_ar = Array(
+        Array('server'=>'localhost', 'bin'=>11211),	
+        Array('server'=>'mvscache.veiptl.0001.use1.cache.amazonaws.com', 'bin'=>11211)
+    );	
+	
+    $mvs_memcache = Movabls_Data::memcache_link($memcache_link_ar);	
 
 
 	Movabls_Session::get_session();

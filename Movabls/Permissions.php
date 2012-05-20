@@ -11,10 +11,10 @@ class Movabls_Permissions {
      * @param string $movabl_guid
      * @param array $user
      * @param string $permission_type
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      */
     public static function check_permission($movabl_type,$movabl_guid,$permission_type) {
-     global $mvsdb;
+     global $mvs_db;
 
 return true;
 /*        if (in_array(1,$GLOBALS->_USER['groups']))
@@ -25,12 +25,12 @@ return true;
 
         
            
-        $movabl_type = $mvsdb->real_escape_string($movabl_type);
-        $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
+        $movabl_type = $mvs_db->real_escape_string($movabl_type);
+        $movabl_guid = $mvs_db->real_escape_string($movabl_guid);
         foreach ($GLOBALS->_USER['groups'] as $k => $group)
-            $groups[$k] = $mvsdb->real_escape_string($group);
+            $groups[$k] = $mvs_db->real_escape_string($group);
         $groups = "'".implode("','",$groups)."'";
-        $permission_type = $mvsdb->real_escape_string($permission_type);
+        $permission_type = $mvs_db->real_escape_string($permission_type);
 
         $guid = empty($movabl_guid) ? "IS NULL" : "= '".$movabl_guid."'";
 		
@@ -57,7 +57,7 @@ return true;
      * @param string $movabl_type
      * @param string $movabl_guid
      * @param array $groups = array('id'=>1,'read'=>bool,'write'=>bool,'execute'=>bool)
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      */
     public static function set_movabl_permissions($movabl_type,$movabl_guid,$groups) {
 
@@ -77,13 +77,13 @@ return true;
      * @param array $groups = array('id'=>1,'read'=>bool,'write'=>bool,'execute'=>bool)
      * @param string $inheritance_type
      * @param string $inheritance_GUID
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return array of new children given this inheritance in this iteration
      */
     private static function set_permission($movabl_type,$movabl_guid,$groups,$inheritance_type = null,$inheritance_GUID = null) {
 
         
-            global $mvsdb;
+            global $mvs_db;
 
         $escaped_data = self::escape_data($movabl_type,$movabl_guid,$groups,$inheritance_type,$inheritance_GUID);
 
@@ -204,13 +204,13 @@ return true;
      * returns a list of them and their children
      * @param array $escaped_data
      * @param bool $toplevel
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return children set in this level of the tree and below
      */
     private static function set_children($escaped_data,$toplevel) {
 
         
-            global $mvsdb;
+            global $mvs_db;
 
         $new_children = array();
 
@@ -291,10 +291,10 @@ return true;
     public static function add_site_permissions($movabl_type,$movabl_guid) {
 
         
-            global $mvsdb;
+            global $mvs_db;
 
-        $movabl_type = $mvsdb->real_escape_string($movabl_type);
-        $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
+        $movabl_type = $mvs_db->real_escape_string($movabl_type);
+        $movabl_guid = $mvs_db->real_escape_string($movabl_guid);
 
         $current = self::get_permissions('site',null,null);
 
@@ -316,12 +316,12 @@ return true;
      * thereby adding any new children and removing any old children that may no longer be present
      * @param string $movabl_type
      * @param string $movabl_guid
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      */
     public static function reinforce_permissions($movabl_type,$movabl_guid) {
 
         
-            global $mvsdb;
+            global $mvs_db;
 
         //Reset this movabl with its current permissions
         $results = Movabls_Data::data_query("SELECT * FROM mvs_permissions
@@ -349,8 +349,8 @@ return true;
         self::set_permission($movabl_type,$movabl_guid,$current,null,null);
 
         //Now set all of the parents
-        $movabl_type = $mvsdb->real_escape_string($movabl_type);
-        $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
+        $movabl_type = $mvs_db->real_escape_string($movabl_type);
+        $movabl_guid = $mvs_db->real_escape_string($movabl_guid);
         $results = Movabls_Data::data_query("SELECT * FROM mvs_permissions
                                   WHERE movabl_type = '$movabl_type'
                                   AND movabl_GUID = '$movabl_guid'
@@ -385,13 +385,13 @@ return true;
      * @param string $movabl_type
      * @param string $movabl_guid
      * @param array $groups
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return permissions array
      */
     public static function get_permissions($movabl_type,$movabl_guid,$groups = null) {
 
         
-            global $mvsdb;
+            global $mvs_db;
 
         if (empty($groups)) {
             $allgroups = self::get_groups();
@@ -401,14 +401,14 @@ return true;
         }
 
         foreach ($groups as $k => $v) {
-            $groups[$k] = $mvsdb->real_escape_string($v);
+            $groups[$k] = $mvs_db->real_escape_string($v);
             $return[$v] = array('read'=>false,'write'=>false,'execute'=>false);
         }
-        $movabl_type = $mvsdb->real_escape_string($movabl_type);
+        $movabl_type = $mvs_db->real_escape_string($movabl_type);
         if (empty($movabl_guid))
             $guid = 'IS NULL';
         else
-            $guid = "= '".$mvsdb->real_escape_string($movabl_guid)."'";
+            $guid = "= '".$mvs_db->real_escape_string($movabl_guid)."'";
 
         $results = Movabls_Data::data_query("SELECT * FROM mvs_permissions
                                   WHERE movabl_type = '$movabl_type'
@@ -430,13 +430,13 @@ return true;
 
     /**
      * Gets all groups present on this site
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return groups array
      */
-    public static function get_groups($mvsdb = null) {
+    public static function get_groups($mvs_db = null) {
 
         
-            global $mvsdb;
+            global $mvs_db;
 
         $results = Movabls_Data::data_query("SELECT * FROM `{$GLOBALS->_SERVER['DATABASE']}`.mvs_groups");
         while($row = $results->fetch_assoc())
@@ -451,17 +451,17 @@ return true;
      * Deletes all permissions tied to a specific movabl, including permissions inherited from that movabl
      * @param <type> $movabl_type
      * @param <type> $movabl_guid
-     * @param <type> $mvsdb
+     * @param <type> $mvs_db
      */
     public static function delete_permissions($movabl_type,$movabl_guid) {
 
         self::reinforce_permissions($movabl_type,$movabl_guid);
 
         
-            global $mvsdb;
+            global $mvs_db;
 
-        $movabl_type = $mvsdb->real_escape_string($movabl_type);
-        $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
+        $movabl_type = $mvs_db->real_escape_string($movabl_type);
+        $movabl_guid = $mvs_db->real_escape_string($movabl_guid);
         Movabls_Data::data_query("DELETE FROM mvs_permissions
                        WHERE (movabl_type = '$movabl_type' AND movabl_GUID = '$movabl_guid')
                        OR (inheritance_type = '$movabl_type' AND inheritance_GUID = '$movabl_guid')");
@@ -475,22 +475,22 @@ return true;
      * @param array $groups
      * @param string $inheritance_type
      * @param string $inheritance_GUID
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return array 
      */
     private static function escape_data($movabl_type,$movabl_guid,$groups,$inheritance_type,$inheritance_GUID) {
 
         
-            global $mvsdb;
+            global $mvs_db;
 
-        $data['movabl_type'] = $mvsdb->real_escape_string($movabl_type);
-        $data['movabl_GUID'] = !empty($movabl_guid) ? $mvsdb->real_escape_string($movabl_guid) : null;
-        $data['inheritance_type'] = !empty($inheritance_type) ? $mvsdb->real_escape_string($inheritance_type) : null;
-        $data['inheritance_GUID'] = !empty($inheritance_GUID) ? $mvsdb->real_escape_string($inheritance_GUID) : null;
+        $data['movabl_type'] = $mvs_db->real_escape_string($movabl_type);
+        $data['movabl_GUID'] = !empty($movabl_guid) ? $mvs_db->real_escape_string($movabl_guid) : null;
+        $data['inheritance_type'] = !empty($inheritance_type) ? $mvs_db->real_escape_string($inheritance_type) : null;
+        $data['inheritance_GUID'] = !empty($inheritance_GUID) ? $mvs_db->real_escape_string($inheritance_GUID) : null;
 
         if (!empty($groups)) {
             foreach ($groups as $k => $group) {
-                $data['groups'][$k]['id'] = $mvsdb->real_escape_string($group['id']);
+                $data['groups'][$k]['id'] = $mvs_db->real_escape_string($group['id']);
                 $data['groups'][$k]['read'] = $group['read'] ? true : false;
                 $data['groups'][$k]['write'] = $group['write'] ? true : false;
                 $data['groups'][$k]['execute'] = $group['execute'] ? true : false;
@@ -509,12 +509,12 @@ return true;
      */
     private static function db_link() {
 		include ('config.inc.php');
-        $mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
+        $mvs_db = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
         if (mysqli_connect_errno()) {
             printf("Connect failed: %s\n", mysqli_connect_error());
             exit();
         }
-        return $mvsdb;
+        return $mvs_db;
 
     }
 

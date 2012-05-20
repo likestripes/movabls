@@ -10,18 +10,18 @@ class Movabls_Users {
      * @param int $user_id
      * @param string $password
      * @param array $userfields = array(fieldname => value)
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return user_id
      */
     public static function create($password,$userfields) {
-        global $mvsdb;
+        global $mvs_db;
 
         $nonce = self::generate_nonce();
         $password = self::generate_password($password, $nonce);
 
         $fields = array();
         foreach ($userfields as $k => $v)
-            $fields[$mvsdb->real_escape_string($k)] = $mvsdb->real_escape_string($v);
+            $fields[$mvs_db->real_escape_string($k)] = $mvs_db->real_escape_string($v);
 
         $fieldnames = $fieldvalues = '';
         if (!empty($fields)) {
@@ -32,26 +32,26 @@ class Movabls_Users {
         Movabls_Data::data_query("INSERT INTO `mvs_users` (user_id,password,nonce$fieldnames)
                        VALUES ('','$password','$nonce'$fieldvalues)");
 
-        if ($mvsdb->errno)
-			throw new Exception('MYSQL Error: '.$mvsdb->error,500);
+        if ($mvs_db->errno)
+			throw new Exception('MYSQL Error: '.$mvs_db->error,500);
         else
-            return $mvsdb->insert_id;
+            return $mvs_db->insert_id;
     }
 
 	
 	  public static function create_group($group_name, $session_term) {
-        global $mvsdb;
+        global $mvs_db;
 
 
         Movabls_Data::data_query("INSERT INTO `mvs_groups` (group_id,name,session_term)
                        VALUES ('','$group_name','$session_term')");
 
-        if ($mvsdb->errno)
-			throw new Exception('MYSQL Error: '.$mvsdb->error,500);
+        if ($mvs_db->errno)
+			throw new Exception('MYSQL Error: '.$mvs_db->error,500);
         else
-            $group_id =  $mvsdb->insert_id;
+            $group_id =  $mvs_db->insert_id;
 			
-	$mvsdb->query("INSERT INTO  `mvs_group_memberships` ( `user_id` ,`group_id` ) VALUES ('6',  '$group_id' );");
+	$mvs_db->query("INSERT INTO  `mvs_group_memberships` ( `user_id` ,`group_id` ) VALUES ('6',  '$group_id' );");
 			return $group_id;
 
     }
@@ -64,16 +64,16 @@ class Movabls_Users {
      * @param string $password = the password the user entered
      */
     public static function login($field,$value,$password) {
-        global $mvsdb;
+        global $mvs_db;
         if (isset($GLOBALS->_USER['session_id'])) self::logout();
 
-        $field = $mvsdb->real_escape_string($field);
-        $value = $mvsdb->real_escape_string($value);
+        $field = $mvs_db->real_escape_string($field);
+        $value = $mvs_db->real_escape_string($value);
 
         $results = Movabls_Data::data_query("SELECT user_id,password,nonce FROM `mvs_users`
                                   WHERE `$field` = '$value'");
-        if ($mvsdb->errno)
-         return false;   //throw new Exception('MYSQL Error: '.$mvsdb->error,500);
+        if ($mvs_db->errno)
+         return false;   //throw new Exception('MYSQL Error: '.$mvs_db->error,500);
         elseif ($results->num_rows > 1)
           return false;//  throw new Exception ("Login field must be unique",500);
         elseif ($results->num_rows < 1)
@@ -88,7 +88,7 @@ class Movabls_Users {
             //throw new Exception ("Incorrect $field - password combination",500);
 		return false;
 			}else{
-            Movabls_Session::create_session($user['user_id'],$mvsdb);
+            Movabls_Session::create_session($user['user_id'],$mvs_db);
 		return true;
 		}
     }
@@ -106,20 +106,20 @@ class Movabls_Users {
      * Change a user's password
      * @param user_id $user_id
      * @param string $password
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      */
     public static function change_password($user_id,$password) {
-        global $mvsdb;
+        global $mvs_db;
 
-        $user_id = $mvsdb->real_escape_string($user_id);
+        $user_id = $mvs_db->real_escape_string($user_id);
         $nonce = self::generate_nonce();
         $password = self::generate_password($password, $nonce);
 
         Movabls_Data::data_query("UPDATE `mvs_users` SET password = '$password',nonce = '$nonce'
                        WHERE user_id = $user_id");
 
-        if ($mvsdb->errno)
-            throw new Exception('MYSQL Error: '.$mvsdb->error,500);
+        if ($mvs_db->errno)
+            throw new Exception('MYSQL Error: '.$mvs_db->error,500);
 
     }
 

@@ -11,7 +11,7 @@ class Movabls {
      */
     public static function get_packages() {
 
-        global $mvsdb;
+        global $mvs_db;
 
         $permissions = self::join_permissions('package');
 
@@ -95,7 +95,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      */
     public static function get_index($packages = 'all',$uncategorized = true) {
         
-        global $mvsdb;
+        global $mvs_db;
         
         $index = self::get_packages_content($packages);
 
@@ -144,15 +144,15 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
     /**
      * Gets an index of all movabls contained in the specified packages
      * @param array $packages
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return array 
      */
     private static function get_packages_content($packages = 'all') {
-        global $mvsdb;
+        global $mvs_db;
 
         if (!empty($packages) && $packages != 'all') {
             foreach ($packages as $k => $package)
-                $packages[$k] = $mvsdb->real_escape_string($package);
+                $packages[$k] = $mvs_db->real_escape_string($package);
         }
 
         $index = array(
@@ -307,10 +307,10 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      * Gets all movabls that aren't part of any package or sub-element of a package
      * and adds them to the index
      * @param array $index
-     * @param mysqli handle $mvsdb 
+     * @param mysqli handle $mvs_db 
      */
     private static function add_uncategorized_to_index(&$index) {
-        global $mvsdb;
+        global $mvs_db;
 
         $categorized = self::get_packages_content();
 
@@ -396,13 +396,13 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      */
     public static function get_movabl($movabl_type, $movabl_guid) {
 
-        global $mvsdb;
+        global $mvs_db;
 
     //    if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'read'))
         //    throw new Exception("You do not have permission to view this Movabl",403);
 
-        $movabl_type = $mvsdb->real_escape_string($movabl_type);
-        $movabl_guid = $mvsdb->real_escape_string($movabl_guid);
+        $movabl_type = $mvs_db->real_escape_string($movabl_type);
+        $movabl_guid = $mvs_db->real_escape_string($movabl_guid);
 
         $table = self::table_name($movabl_type);
             
@@ -451,11 +451,11 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      * Movabl or type
      * @param mixed $types (array or string)
      * @param mixed $guids (array or string)
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return array
      */
     public static function get_meta($types,$guids = null) {
-        global $mvsdb;
+        global $mvs_db;
 
         $meta = array();
 
@@ -471,7 +471,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
             if (!is_array($guids))
                 $guids = array($guids);
             foreach($guids as $k => $guid)
-                $guids[$k] = $mvsdb->real_escape_string($guid);
+                $guids[$k] = $mvs_db->real_escape_string($guid);
             $in_string = "'".implode("','",$guids)."'";
             $where[] = "m.movabls_GUID IN ($in_string)";
         }
@@ -480,7 +480,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
             if (!is_array($types))
                 $types = array($types);
             foreach($types as $k => $type)
-                $types[$k] = $mvsdb->real_escape_string($type);
+                $types[$k] = $mvs_db->real_escape_string($type);
             $in_string = "'".implode("','",$types)."'";
             $where[] = "m.movabls_type IN ($in_string)";
         }
@@ -506,11 +506,11 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      * or an individual Movabl or type
      * @param mixed $types (array or string)
      * @param mixed $guids (array or string)
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return array
      */
     public static function get_tags_meta($types = null,$guids = null) {
-        global $mvsdb;
+        global $mvs_db;
 
         $meta = array();
 
@@ -526,7 +526,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
             if (!is_array($guids))
                 $guids = array($guids);
             foreach($guids as $k => $guid)
-                $guids[$k] = $mvsdb->real_escape_string($guid);
+                $guids[$k] = $mvs_db->real_escape_string($guid);
             $in_string = "'".implode("','",$guids)."'";
             $where[] = "m.movabls_GUID IN ($in_string)";
         }
@@ -535,7 +535,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
             if (!is_array($types))
                 $types = array($types);
             foreach($types as $k => $type)
-                $types[$k] = $mvsdb->real_escape_string($type.'_tag');
+                $types[$k] = $mvs_db->real_escape_string($type.'_tag');
             $in_string = "'".implode("','",$types)."'";
             $where[] = "m.movabls_type IN ($in_string)";
         }
@@ -561,7 +561,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      * @param string $movabl_type
      * @param array $data
      * @param string $movabl_guid
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return $movabl_guid
      */
     public static function set_movabl($movabl_type,$data,$movabl_guid = null) {
@@ -569,7 +569,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
         //TODO: Add a warning if this is a global movabl - maybe you have to specify an overwrite flag
 
 
-            global $mvsdb;
+            global $mvs_db;
 
      //   if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write'))
        //     throw new Exception("You do not have permission to edit this Movabl",500);
@@ -611,8 +611,8 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
 
         $data = self::sanitize_data($movabl_type,$data);
         $table = self::table_name($movabl_type);
-        $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
-        $sanitized_type = $mvsdb->real_escape_string($movabl_type);
+        $sanitized_guid = $mvs_db->real_escape_string($movabl_guid);
+        $sanitized_type = $mvs_db->real_escape_string($movabl_type);
 
         if (!empty($movabl_guid)) {
             $datastring = self::generate_datastring('update',$data);
@@ -645,13 +645,13 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      * @param string $movabl_type
      * @param array $newdata
      * @param string $movabl_guid
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return bool 
      */
     private static function movabls_added($movabl_type,$newdata,$movabl_guid = null) {
 
 
-            global $mvsdb;
+            global $mvs_db;
             
         if (!in_array($movabl_type,array('package','place','interface')))
             return false;
@@ -735,11 +735,11 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      * @param array $new_meta
      * @param string $movabl_type
      * @param string $movabl_guid
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return bool 
      */
     public static function set_meta($new_meta,$movabl_type,$movabl_guid) {
-        global $mvsdb;
+        global $mvs_db;
 
     //    if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write'))
        //     throw new Exception("You do not have permission to edit this Movabl",500);
@@ -765,8 +765,8 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
 
         $inserts = self::sanitize_data('meta',$inserts);
         $updates = self::sanitize_data('meta',$updates);
-        $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
-        $sanitized_type = $mvsdb->real_escape_string($movabl_type);
+        $sanitized_guid = $mvs_db->real_escape_string($movabl_guid);
+        $sanitized_type = $mvs_db->real_escape_string($movabl_type);
 
         if (!empty($inserts)) {
             foreach ($inserts as $k => $v)
@@ -791,17 +791,17 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      * @param array $new_meta
      * @param string $movabl_type
      * @param string $movabl_guid
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return bool
      */
     public static function set_tags_meta($new_tags_meta,$movabl_type,$movabl_guid) {
-        global $mvsdb;
+        global $mvs_db;
 
     //    if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write'))
         //    throw new Exception("You do not have permission to edit this Movabl",500);
 
-        $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
-        $sanitized_type = $mvsdb->real_escape_string($movabl_type.'_tag');
+        $sanitized_guid = $mvs_db->real_escape_string($movabl_guid);
+        $sanitized_type = $mvs_db->real_escape_string($movabl_type.'_tag');
 
         $old_tags_meta = self::get_tags_meta($movabl_type,$movabl_guid);
         if (!empty($old_tags_meta))
@@ -829,7 +829,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
 
             $inserts = self::sanitize_data('meta',$inserts);
             $updates = self::sanitize_data('meta',$updates);
-            $sanitized_tag = $mvsdb->real_escape_string($new_tag);
+            $sanitized_tag = $mvs_db->real_escape_string($new_tag);
 
             if (!empty($inserts)) {
                 foreach ($inserts as $k => $v)
@@ -848,7 +848,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
         //Remove old tags' meta for tags tied to the movabl but not in the new tags set
         if (!empty($old_tags_meta)) {
             foreach ($old_tags_meta as $old_tag => $v) {
-                $sanitized_tag = $mvsdb->real_escape_string($old_tag);
+                $sanitized_tag = $mvs_db->real_escape_string($old_tag);
                 Movabls_Data::data_query("DELETE FROM `mvs_meta` WHERE `movabls_type` = '$sanitized_type' AND `movabls_GUID` = '$sanitized_guid' AND `tag_name` = '$sanitized_tag'");
             }
         }
@@ -865,14 +865,14 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      */
     public static function delete_movabl($movabl_type,$movabl_guid) {
 
-        global $mvsdb;
+        global $mvs_db;
 
      //   if (!Movabls_Permissions::check_permission($movabl_type, $movabl_guid, 'write'))
        //     throw new Exception("You do not have permission to delete this Movabl",500);
 
         $table = self::table_name($movabl_type);
-        $sanitized_guid = $mvsdb->real_escape_string($movabl_guid);
-        $sanitized_type = $mvsdb->real_escape_string($movabl_type);
+        $sanitized_guid = $mvs_db->real_escape_string($movabl_guid);
+        $sanitized_type = $mvs_db->real_escape_string($movabl_type);
 
         $result = Movabls_Data::data_query("DELETE FROM `mvs_$table` WHERE {$sanitized_type}_GUID = '$sanitized_guid'");
 
@@ -889,7 +889,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      * Deletes all references to this movabl in places, interfaces and packages
      * @param string $movabl_type
      * @param string $movabl_guid
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      */
     private static function delete_references($movabl_type,$movabl_guid) {
  
@@ -935,7 +935,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      * @param array $tree
      * @param string $movabl_type
      * @param string $movabl_guid
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return array revised tree
      */
     private static function delete_from_interface($tree, $movabl_type, $movabl_guid) {
@@ -963,41 +963,41 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      * match the correct columns and be safe for the sql query
      * @param string $movabl_type
      * @param array $data
-     * @param mysqli handle $mvsdb
+     * @param mysqli handle $mvs_db
      * @return array 
      */
     private static function sanitize_data($movabl_type,$data) {
-        global $mvsdb;
+        global $mvs_db;
         if (empty($data))
             return $data;
             
         switch($movabl_type) {
             case 'media':
                 $data = array(
-                    'mimetype'      => !empty($data['mimetype']) ? $mvsdb->real_escape_string($data['mimetype']) : '',
-                    'inputs'        => !empty($data['inputs']) ? $mvsdb->real_escape_string(json_encode($data['inputs'])) : '',
-                    'content'       => !empty($data['content']) ? $mvsdb->real_escape_string($data['content']) : ''
+                    'mimetype'      => !empty($data['mimetype']) ? $mvs_db->real_escape_string($data['mimetype']) : '',
+                    'inputs'        => !empty($data['inputs']) ? $mvs_db->real_escape_string(json_encode($data['inputs'])) : '',
+                    'content'       => !empty($data['content']) ? $mvs_db->real_escape_string($data['content']) : ''
                 );
                 break;
             case 'function':
                 $data = array(
-                    'inputs'        => !empty($data['inputs']) ? $mvsdb->real_escape_string(json_encode($data['inputs'])) : '',
-                    'content'       => !empty($data['content']) ? $mvsdb->real_escape_string(utf8_encode($data['content'])) : ''
+                    'inputs'        => !empty($data['inputs']) ? $mvs_db->real_escape_string(json_encode($data['inputs'])) : '',
+                    'content'       => !empty($data['content']) ? $mvs_db->real_escape_string(utf8_encode($data['content'])) : ''
                 );
                 break;
             case 'interface':
                 $data = array(
-                    'content'       => !empty($data['content']) ? $mvsdb->real_escape_string(json_encode($data['content'])) : ''
+                    'content'       => !empty($data['content']) ? $mvs_db->real_escape_string(json_encode($data['content'])) : ''
                 );
                 break;
             case 'place':
 				if (!empty($data['interface_GUID']))
-					$clean_interface_GUID =  $mvsdb->real_escape_string($data['interface_GUID']);
+					$clean_interface_GUID =  $mvs_db->real_escape_string($data['interface_GUID']);
 				$data = array(
-                    'url'           => $mvsdb->real_escape_string($data['url']),
-                    'inputs'        => !empty($data['inputs']) ? $mvsdb->real_escape_string(json_encode($data['inputs'])) : '',
+                    'url'           => $mvs_db->real_escape_string($data['url']),
+                    'inputs'        => !empty($data['inputs']) ? $mvs_db->real_escape_string(json_encode($data['inputs'])) : '',
                     'https'         => $data['https'] ? '1' : '0',
-                    'media_GUID'    => $mvsdb->real_escape_string($data['media_GUID']),
+                    'media_GUID'    => $mvs_db->real_escape_string($data['media_GUID']),
                 );
                 if (!empty($clean_interface_GUID))
                     $data['interface_GUID'] = $clean_interface_GUID;
@@ -1006,11 +1006,11 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
                 $pre_data = $data;
                 $data = array();
                 foreach ($pre_data as $k => $v)
-                    $data[$mvsdb->real_escape_string($k)] = $mvsdb->real_escape_string($v);
+                    $data[$mvs_db->real_escape_string($k)] = $mvs_db->real_escape_string($v);
                 break;
             case 'package':
                 $data = array(
-                    'contents' => $mvsdb->real_escape_string(json_encode($data['contents']))
+                    'contents' => $mvs_db->real_escape_string(json_encode($data['contents']))
                 );
                 break;
             default:

@@ -25,10 +25,10 @@ try {
 
           //Get database handle
 	//		include ('config.inc.php');
-      //      $mvsdb = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
-//	    print_r($mvsdb);
+      //      $mvs_db = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
+//	    print_r($mvs_db);
             //Get session
-            //Movabls_Session::get_session($mvsdb);
+            //Movabls_Session::get_session($mvs_db);
 	//    $result = Movabls_Data::data_query("SELECT * from mvs_functions");
 //	while ($row = $q->fetch_assoc()) {
 	//print_r($row);
@@ -106,9 +106,9 @@ try {
      * @return array from database
      */
     private function get_place($url) {
-        global $mvsdb;
+        global $mvs_db;
         //Find correct place to use (static places [without %] take precedence over dynamic places [with %])
-        $url = $mvsdb->real_escape_string($url);
+        $url = $mvs_db->real_escape_string($url);
 
         if ($url == '%')
             $error_place = '';
@@ -232,7 +232,7 @@ try {
      * @param <string> $interface_GUID
      */
     private function get_interface($interface_GUID) {
-        global $mvsdb;
+        global $mvs_db;
 
 		$interface->mvs_server->expression='$GLOBALS->_SERVER;';	
 		$interface->mvs_place->expression='$GLOBALS->_PLACE;';	
@@ -245,7 +245,7 @@ try {
 		}else{
 		
             if (!isset($this->interfaces->$interface_GUID)) {
-                $interface_GUID = $mvsdb->real_escape_string($interface_GUID);
+                $interface_GUID = $mvs_db->real_escape_string($interface_GUID);
                 $interface_obj = Movabls_Data::data_query("SELECT content FROM mvs_interfaces WHERE interface_GUID = '$interface_GUID'", DATA_OBJECT);
                 //$interface_obj = $result->fetch_object();
                 //$result->free();
@@ -301,14 +301,14 @@ try {
      * @param <string> $primary_GUID = the primary media for the place
      */
     private function select_movabls($primary_GUID) {
-        global $mvsdb;
+        global $mvs_db;
 
         //TODO: If a movabl is not found, needs to throw an error and reference the interface that calls the movabl
         if (!isset($this->media->$primary_GUID))
             $this->media->$primary_GUID = null;
 
         foreach ($this->media as $key => $val)
-            $media[] = $mvsdb->real_escape_string($key);
+            $media[] = $mvs_db->real_escape_string($key);
         $media = '"'.implode('","',$media).'"';
 
         $result = Movabls_Data::data_query("SELECT media_GUID,inputs,mimetype,content FROM mvs_media
@@ -363,7 +363,7 @@ try {
         if ($this->functions != new StdClass()) {
             
             foreach ($this->functions as $key => $val)
-                $functions[] = $mvsdb->real_escape_string($key);
+                $functions[] = $mvs_db->real_escape_string($key);
             $functions = '"'.implode('","',$functions).'"';
 
             $result = Movabls_Data::data_query("SELECT function_GUID,inputs,content FROM mvs_functions
@@ -402,7 +402,7 @@ try {
         if ($this->places != new StdClass()) {
 
             foreach ($this->places as $key => $val)
-                $places[] = $mvsdb->real_escape_string($key);
+                $places[] = $mvs_db->real_escape_string($key);
             $places = '"'.implode('","',$places).'"';
 
             $result = Movabls_Data::data_query("SELECT place_GUID,url,inputs,https,media_GUID,interface_GUID FROM mvs_places
