@@ -9,39 +9,22 @@ define('DATA_ARRAY',2);
  * @author Travis Donia
  */
 class Movabls_Data {
-/* function __construct() {
 
-	include ('config.inc.php');
-        $mvs_db = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
-        $this->db_link = $mvs_db;
-  
-
-}
-*/
-    /**
-     * Gets a single movabl by type and GUID
-     * @param string $movabl_type
-     * @param array
-     */
+/**
+ * Gets a query from the $mvs_db; cache'd if possible.
+ */
 public static function data_query($query, $return_type=DATA_RESULT, $cacheable=TRUE) {
     global $mvs_db;
 	if (strtoupper(substr($query, 0, 6)) != "SELECT")  $cacheable = FALSE;
 
     if(!$cacheable || $return_type === DATA_RESULT ):
-       if (!is_object($mvs_db))  $mvs_db = self::db_link();
        $result = $mvs_db->query($query);
        return  $result;
     else:
       $query_md5 = md5($query);
       $cache_return = self::memcache_get($query_md5);
-    //  print_r($cache_return);
         if (!isset($cache_return) || empty($cache_return)):
-            if (!is_object($mvs_db)) $mvs_db = self::db_link();
-                $result = $mvs_db->query($query);
+            $result = $mvs_db->query($query);
 
             if ($return_type === DATA_OBJECT)
                 $return_value =  $result->fetch_object();
@@ -55,11 +38,17 @@ public static function data_query($query, $return_type=DATA_RESULT, $cacheable=T
     endif;
 }
     
+/**
+ * Gets data from mvs_memcache
+ */
 public static function memcache_get($key) {
     global $mvs_memcache;
     if (is_object($mvs_memcache)) return $mvs_memcache->get($key);
 }
-    
+
+/**
+ * Sets data in mvs_memcache
+ */
 public static function memcache_set($key, $value) {
     global $mvs_memcache;
     if (is_object($mvs_memcache)):
@@ -68,6 +57,9 @@ public static function memcache_set($key, $value) {
     endif;
 }
 
+/**
+ * Loops memcache servers/bins and connects as it can.
+ */
 public static function memcache_link($link_ar) {
     global $mvs_memcache;
 
@@ -84,22 +76,20 @@ public static function memcache_link($link_ar) {
     return FALSE;
 }
 
-    /**
-     * Gets the handle to access the database
-     * @return mysqli handle 
-     */
-    public static function db_link() {
+/**
+ * Gets the handle to access the database
+ * @return mysqli handle 
+ */
+public static function db_link($db_server,$db_user,$db_password,$db_name, $db_port) {
     global $mvs_db;
     if (!is_object($mvs_db)):
-	include ('config.inc.php');
         $mvs_db = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
-        if (mysqli_connect_errno()) {
+        if (mysqli_connect_errno()):
             printf("Connect failed: %s\n", mysqli_connect_error());
             exit();
-        }
-
-    
+        endif;
     endif;
-        return $mvs_db;
-        }
+    return $mvs_db;
+}
+
 }

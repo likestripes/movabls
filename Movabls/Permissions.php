@@ -503,19 +503,4 @@ return true;
 
     }
 
-    /**
-     * Gets the handle to access the database
-     * @return mysqli handle
-     */
-    private static function db_link() {
-		include ('config.inc.php');
-        $mvs_db = new mysqli($db_server,$db_user,$db_password,$db_name, $db_port);
-        if (mysqli_connect_errno()) {
-            printf("Connect failed: %s\n", mysqli_connect_error());
-            exit();
-        }
-        return $mvs_db;
-
-    }
-
 }
