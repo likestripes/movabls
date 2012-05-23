@@ -172,7 +172,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
         $permissions = self::join_permissions('package',$where);
 
         $result = Movabls_Data::data_query("SELECT * FROM mvs_packages x $permissions");
-        
+
         //Add package elements to the index array
         while ($row = $result->fetch_assoc()) {
             $contents = json_decode($row['contents'],true);
@@ -180,7 +180,7 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
                 self::add_item_to_index($index,$movabl['movabl_type'],$movabl['movabl_GUID']);
         }
         $result->free();
-        
+
         //Get all sub-elements of places and interfaces in the selected packages
         if (!empty($index['places']) || !empty($index['interfaces']))
             $new = true;
@@ -357,12 +357,13 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      */
     private static function join_permissions($type,$where = array()) {
         
-        $group = $join = '';
+    //    $group = 
+$join = '';
 
-        if (!$GLOBALS->_USER['is_owner']) {
+//        if (!$GLOBALS->_USER['is_owner']) {
 
-            $groups = "'".implode("','",$GLOBALS->_USER['groups'])."'";
-            
+  //          $groups = "'".implode("','",$GLOBALS->_USER['groups'])."'";
+/*            
             if ($type == 'meta')
                 $join = " INNER JOIN mvs_permissions AS p ON p.movabl_GUID = m.movabls_GUID AND p.movabl_type = m.movabls_type";
             else
@@ -372,21 +373,22 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
                 $where[] = "p.movabl_type = '$type'";
             $where[] = "p.permission_type = 'read'";
             $where[] = "p.group_id IN ($groups)";
-
+*/
             if ($type == 'meta')
-                $group = " GROUP BY p.movabl_type,p.movabl_GUID,m.key";
+                $group = " GROUP BY m.movabls_type,m.movabls_GUID,m.key";
             else
-                $group = " GROUP BY p.movabl_type,p.movabl_GUID";               
+                $group = " GROUP BY x.{$type}_GUID";               
 
-        }
+  //      }
 
         if (!empty($where))
             $where = 'WHERE '.implode(' AND ',$where);
         else
             $where = '';
 
-        return "$join $where $group";
-
+//        return "$join $where $group";
+//echo $group;
+return " $where $group";
     }
 
     /**

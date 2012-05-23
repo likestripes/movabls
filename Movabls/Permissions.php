@@ -61,8 +61,8 @@ return true;
      */
     public static function set_movabl_permissions($movabl_type,$movabl_guid,$groups) {
 
-        if (!in_array(1,$GLOBALS->_USER['groups']))
-            throw new Exception('Only administrators can edit permissions.',500);
+//        if (!in_array(1,$GLOBALS->_USER['groups']))
+  //          throw new Exception('Only administrators can edit permissions.',500);
 
         self::set_permission($movabl_type, $movabl_guid, $groups);
 
