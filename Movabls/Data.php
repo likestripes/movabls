@@ -3,6 +3,7 @@
 define('DATA_RESULT', 0);
 define('DATA_OBJECT', 1);
 define('DATA_ARRAY',2);
+define('MEMCACHE_COMPRESSED',1);
 
 /**
  * Data API
@@ -27,9 +28,9 @@ public static function data_query($query, $return_type=DATA_RESULT, $cacheable=T
             $result = $mvs_db->query($query);
 
             if ($return_type === DATA_OBJECT)
-                $return_value =  $result->fetch_object();
+                $return_value = $result->fetch_object();
             elseif ($return_type === DATA_ARRAY)
-                $return_value = $result->fetch_array();
+                $return_value = $result->fetch_assoc();
 
             self::memcache_set($query_md5, $return_value);
 

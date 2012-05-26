@@ -43,6 +43,9 @@ try{
 	Movabls_Session::get_session();
 	$GLOBALS = new Movabls_Globals();
 
+    //Movabls_Permissions::set_permission("11","sadfsad");
+    //Movabls_Permissions::check_permission("11","sadfsad");
+    
 	unset($_SERVER,$_GET,$_POST,$_FILES,$_COOKIE,$_SESSION,$_REQUEST,$_ENV,$_USER);
 
 	new Movabls_Run;

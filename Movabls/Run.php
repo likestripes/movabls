@@ -144,39 +144,38 @@ try {
         else
             $this->add_place($place);
 
-		//echo "add place  passed";
-		//print_r($GLOBALS);	
-//echo $place->place_GUID;
-		if (!Movabls_Permissions::check_permission('place', $place->place_GUID, 'execute')){
-			echo "no perm checked out";		
-			if (!$GLOBALS->_USER['session_id']) {
-				//echo "no sess";
-				
-				if (!$GLOBALS->_POST['email'] || !$GLOBALS->_POST['password']) {
-					 header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
-					//echo "bad pass";
-					die();
-				}else{
-					Movabls_Users::login('email',$GLOBALS->_POST['email'],$GLOBALS->_POST['password']);
-					header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
-					//echo "attempt to login";
-					die();
-					}
-			}else{
-				 header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
-				//echo "no perms but has sess";
-				die();
-				// throw new Exception('You do not have permission to access this place',403);
-			}
-		}
-			
+		if (!Movabls_Permissions::check_permission($place->place_GUID)):
+/*
+            if (!$GLOBALS->_USER['session_id']) {
+                if (!$GLOBALS->_POST['email'] || !$GLOBALS->_POST['password']) {
+                     header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
+                    //echo "bad pass";
+                    die();
+                }else{
+                    Movabls_Users::login('email',$GLOBALS->_POST['email'],$GLOBALS->_POST['password']);
+                    header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
+                    //echo "attempt to login";
+                    die();
+                    }
+            }else{
+                 header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
+                //echo "no perms but has sess";
+                die();
+                // throw new Exception('You do not have permission to access this place',403);
+            }
+            */
+            
+            echo "no perm";
+            die();
+		endif;
+		
 			
         if ($place->https && !$GLOBALS->_SERVER['HTTPS']) {
             //header('Location: https://'.$GLOBALS->_SERVER['HTTP_HOST'].$GLOBALS->_SERVER['REQUEST_URI']);
             echo  "no https";
 			die();
         }
-        
+        	
         return $place;
 
     }
