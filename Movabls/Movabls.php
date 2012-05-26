@@ -589,7 +589,7 @@ return " $where $group";
 			case 'package':
 			break;
         }
-
+        $group_id = $data["group_id"];
         $data = self::sanitize_data($movabl_type,$data);
         $table = self::table_name($movabl_type);
         $sanitized_guid = $mvs_db->real_escape_string($movabl_guid);
@@ -605,8 +605,8 @@ return " $where $group";
             $result = Movabls_Data::data_query("INSERT INTO `mvs_$table` $datastring");
             $movabl_guid = $data["{$movabl_type}_guid"];
         }
-        if ($movabl_type === 'place')
-            Movabls_Permissions::set_place_permission($GLOBALS->_USER["user_GUID"], $data["group_id"], $movabl_guid);
+        if ($movabl_type === 'place' && !empty($group_id))
+            Movabls_Permissions::set_place_permission($GLOBALS->_USER["user_GUID"], $group_id, $movabl_guid);
   
         if (!empty($meta))
             self::set_meta($meta,$movabl_type,$movabl_guid);
@@ -962,8 +962,7 @@ return " $where $group";
                     'url'           => $mvs_db->real_escape_string($data['url']),
                     'inputs'        => !empty($data['inputs']) ? $mvs_db->real_escape_string(json_encode($data['inputs'])) : '',
                     'https'         => $data['https'] ? '1' : '0',
-                    'media_GUID'    => $mvs_db->real_escape_string($data['media_GUID']),
-                    'group_id'    =>   $mvs_db->real_escape_string($data['group_id'])
+                    'media_GUID'    => $mvs_db->real_escape_string($data['media_GUID'])
                 );
                 if (!empty($clean_interface_GUID))
                     $data['interface_GUID'] = $clean_interface_GUID;
