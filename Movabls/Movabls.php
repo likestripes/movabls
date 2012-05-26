@@ -555,8 +555,8 @@ return " $where $group";
     public static function set_movabl($movabl_type,$data,$movabl_guid = null) {
         global $mvs_db;
 
-        if (!in_array(1,$GLOBALS->_USER['groups']) && self::movabls_added($movabl_type,$data,$movabl_guid))
-            throw new Exception("Only administrators may add new movabls to a place, interface, or package",500);
+       // if (!in_array(1,$GLOBALS->_USER['groups']) && self::movabls_added($movabl_type,$data,$movabl_guid))
+        //    throw new Exception("Only administrators may add new movabls to a place, interface, or package",500);
 
         if (!empty($data['meta']))
             $meta = $data['meta'];
@@ -606,6 +606,8 @@ return " $where $group";
             $movabl_guid = $data["{$movabl_type}_guid"];
         }
 
+        if ($movabl_type === 'place') Movabls_Permissions::set_permission($GLOBALS->_USER["user_GUID"], NULL, $movabl_guid);
+        
         if (!empty($meta))
             self::set_meta($meta,$movabl_type,$movabl_guid);
         if (!empty($tagsmeta))
