@@ -145,7 +145,7 @@ try {
             $this->add_place($place);
 
 		if (!Movabls_Permissions::check_permission($place->place_GUID)):
-/*
+
             if (!$GLOBALS->_USER['session_id']) {
                 if (!$GLOBALS->_POST['email'] || !$GLOBALS->_POST['password']) {
                      header('Location: http://'.$GLOBALS->_SERVER['HTTP_HOST']."/SignIn".$GLOBALS->_SERVER['REQUEST_URI']);
@@ -163,10 +163,10 @@ try {
                 die();
                 // throw new Exception('You do not have permission to access this place',403);
             }
-            */
             
-            echo "no perm";
-            die();
+            
+ //           echo "no perm";
+  //          die();
 		endif;
 		
 			
