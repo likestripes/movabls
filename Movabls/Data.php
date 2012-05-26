@@ -3,7 +3,7 @@
 define('DATA_RESULT', 0);
 define('DATA_OBJECT', 1);
 define('DATA_ARRAY',2);
-define('MEMCACHE_COMPRESSED',1);
+if (!defined('MEMCACHE_COMPRESSED')) define('MEMCACHE_COMPRESSED',1);
 
 /**
  * Data API
