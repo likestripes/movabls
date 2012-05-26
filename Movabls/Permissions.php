@@ -16,7 +16,7 @@ class Movabls_Permissions {
    public static function check_permission($place_GUID,$access="1") {
    if (isset($GLOBALS->_USER["user_GUID"])):
         $group_str = implode(",", $GLOBALS->_USER["groups"]);
-        $result = Movabls_Data::data_query("SELECT access FROM mvs_permissions WHERE (user_GUID='{$GLOBALS->_USER["user_GUID"]}' OR group_id IN ($group_str)) AND (place_GUID='$place_GUID' OR url='{$GLOBALS->_SERVER["REQUEST_URI"]}');", DATA_ARRAY);
+      //  $result = Movabls_Data::data_query("SELECT access FROM mvs_permissions WHERE (user_GUID='{$GLOBALS->_USER["user_GUID"]}' OR group_id IN ($group_str)) AND (place_GUID='$place_GUID' OR url='{$GLOBALS->_SERVER["REQUEST_URI"]}');", DATA_ARRAY);
 echo "SELECT access FROM mvs_permissions WHERE (user_GUID='{$GLOBALS->_USER["user_GUID"]}' OR group_id IN ($group_str)) AND (place_GUID='$place_GUID' OR url='{$GLOBALS->_SERVER["REQUEST_URI"]}');"
 die();
         return ($result["access"]===$access) ? TRUE : FALSE;
