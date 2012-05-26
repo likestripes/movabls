@@ -24,8 +24,16 @@ class Movabls_Permissions {
     }
 
 
-    public static function set_permission($user_GUID=NULL, $group_id=NULL, $place_GUID=NULL, $url=NULL,$access="1") {
-        $result = Movabls_Data::data_query("REPLACE INTO mvs_permissions (user_GUID, group_id, place_GUID, url, access) VALUES ('$user_GUID',  '', '$place_GUID', '',  '$access' ); ");
+    public static function set_place_permission($user_GUID=NULL, $group_id=NULL, $place_GUID=NULL, $access="1") {
+        if (!in_array(1,$GLOBALS->_USER['groups'])) return;
+        
+        if(isset($user_GUID) && !empty($user_GUID) && $user_GUID!= NULL) Movabls_Data::data_query("REPLACE INTO mvs_permissions (user_GUID, place_GUID, access) VALUES ('$user_GUID', '$place_GUID', '$access' ); ");
+        if(isset($group_id) && !empty($group_id) && $group_id!= NULL) Movabls_Data::data_query("REPLACE INTO mvs_permissions (group_id, place_GUID, access) VALUES ('$group_id', '$place_GUID',  '$access' ); ");
+    }
+    
+    public static function set_url_permission($user_GUID=NULL, $group_id=NULL, $place_GUID=NULL, $url=NULL,$access="1") {
+        if(isset($user_GUID) && !empty($user_GUID) && $user_GUID!= NULL)  Movabls_Data::data_query("REPLACE INTO mvs_permissions (user_GUID, url, access) VALUES ('$user_GUID', '$url',  '$access' ); ");
+        if(isset($group_id) && !empty($group_id) && $group_id!= NULL)  Movabls_Data::data_query("REPLACE INTO mvs_permissions (group_id, url, access) VALUES ('$group_id', '$url',  '$access' ); ");
     }
 
         

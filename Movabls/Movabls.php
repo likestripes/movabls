@@ -555,7 +555,7 @@ return " $where $group";
     public static function set_movabl($movabl_type,$data,$movabl_guid = null) {
         global $mvs_db;
 
-       // if (!in_array(1,$GLOBALS->_USER['groups']) && self::movabls_added($movabl_type,$data,$movabl_guid))
+        // if (!in_array(1,$GLOBALS->_USER['groups']) && self::movabls_added($movabl_type,$data,$movabl_guid))
         //    throw new Exception("Only administrators may add new movabls to a place, interface, or package",500);
 
         if (!empty($data['meta']))
@@ -605,9 +605,9 @@ return " $where $group";
             $result = Movabls_Data::data_query("INSERT INTO `mvs_$table` $datastring");
             $movabl_guid = $data["{$movabl_type}_guid"];
         }
-
-        if ($movabl_type === 'place') Movabls_Permissions::set_permission($GLOBALS->_USER["user_GUID"], NULL, $movabl_guid);
-        
+        if ($movabl_type === 'place')
+            Movabls_Permissions::set_place_permission($GLOBALS->_USER["user_GUID"], $data["group_id"], $movabl_guid);
+  
         if (!empty($meta))
             self::set_meta($meta,$movabl_type,$movabl_guid);
         if (!empty($tagsmeta))
@@ -963,6 +963,7 @@ return " $where $group";
                     'inputs'        => !empty($data['inputs']) ? $mvs_db->real_escape_string(json_encode($data['inputs'])) : '',
                     'https'         => $data['https'] ? '1' : '0',
                     'media_GUID'    => $mvs_db->real_escape_string($data['media_GUID']),
+                    'group_id'    =>   $mvs_db->real_escape_string($data['group_id'])
                 );
                 if (!empty($clean_interface_GUID))
                     $data['interface_GUID'] = $clean_interface_GUID;
