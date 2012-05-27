@@ -5,67 +5,22 @@
  */
 class Movabls {
 
-    /**
-     * Gets a list of all packages on the site
-     * @return array 
-     */
-    public static function get_packages() {
+    public static function get_movabls($type="all") {
 
-        global $mvs_db;
-
-       // $permissions = self::join_permissions('package');
-
-        $result = Movabls_Data::data_query("SELECT package_id, package_GUID, contents FROM `mvs_packages`");
-        if(empty($result))
-            return array();
-
-        while ($row = $result->fetch_assoc()) {
-            $ids[] = $row['package_GUID'];
-            $packages[$row['package_GUID']] = $row;
-            $packages[$row['package_GUID']]['meta'] = array();
-        }
-
-        $result->free();
-
-        $package_meta = self::get_meta('package',$ids);
-
-        foreach ($package_meta as $guid => $meta)
-            $packages[$guid]['meta'] = $meta;
-
-        $package_content_ids=Array();
-        $full_meta=Array();
-        foreach($packages as $guid => $package):
-            $package_contents=json_decode($package["contents"],TRUE);
-            foreach($package_contents as $movabl):
-                $package_content_ids[$movabl["movabl_type"]][]=$movabl["movabl_GUID"];
-                $packages[$guid]["movabls"][$movabl["movabl_type"]][$movabl["movabl_GUID"]]=Array();
-            endforeach;
-        endforeach;
-     
-     foreach($package_content_ids as $type=>$content_ids)
-          $full_meta = array_merge($full_meta, self::get_meta($type,$content_ids));
-   //  print_r($full_meta);
-//endforeach;
-//     die();
-        foreach($packages as $guid => $package): 
+        if (is_array($type)) $type_str = "AND mvs_meta.movabls_type IN ('".implode("','",$type)."')";
+        elseif ($type != "all") $type_str = "AND mvs_meta.movabls_type = '$type'";
+        else $type_str="";
         
-            if(isset($package["meta"]["label"]) && !empty($package["meta"]["label"]))
-                $packages[$guid]["name"]=$package["meta"]["label"];
-            
-            foreach($packages[$guid]["movabls"] as $type=>$movabls_by_type):
-                foreach($movabls_by_type as $movabl_guid=>$movabl):
-                    if(isset($full_meta[$movabl_guid]) && !empty($full_meta[$movabl_guid])) 
-                            $packages[$guid]["movabls"][$type][$movabl_guid]["meta"]=$full_meta[$movabl_guid];
-                    if(isset($packages[$guid]["movabls"][$type][$movabl_guid]["meta"]["label"]) && !empty($packages[$guid]["movabls"][$type][$movabl_guid]["meta"]["label"]))
-                        $packages[$guid]["movabls"][$type][$movabl_guid]["name"]=$packages[$guid]["movabls"][$type][$movabl_guid]["meta"]["label"];
-                endforeach;
-            endforeach;
-        endforeach;
-        
-        return $packages;
+        $result = Movabls_Data::data_query("SELECT mvs_meta.movabls_type, mvs_meta.movabls_GUID, mvs_meta.value FROM  mvs_meta WHERE mvs_meta.key='label' $type_str;");
 
+        $count = 0;
+        $movabls = Array();
+        while($row = $result->fetch_assoc()):
+            $movabls[$row['movabls_type']][$row['movabls_GUID']]=$row['value'];
+            $count++;
+        endwhile;
+        return $movabls;
     }
-
     /**
      * Adds a movabl to the given package
      * @param string $package_guid
@@ -78,19 +33,9 @@ class Movabls {
         if (!in_array(1,$GLOBALS->_USER['groups']))
             throw new Exception('Only administrators can add Movabls to a package',500);
 
-        $package = self::get_movabl('package', $package_guid);
-        foreach ($package['contents'] as $movabl) {
-            if ($movabl['movabl_type'] == $movabl_type && $movabl['movabl_GUID'] == $movabl_guid)
-                return true;
-        }
+        Movabls_Data::data_query("REPLACE INTO  mvs_packages (package_GUID, movabls_GUID, movabls_type) VALUES ('$package_guid',  '$movabl_guid',  '$movabl_type');");
 
-        $package['contents'][] = array(
-            'movabl_type' => $movabl_type,
-            'movabl_GUID' => $movabl_guid
-        );
-if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
         return true;
-
     }
 
     /**
@@ -102,17 +47,11 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
      */
     public static function remove_from_package($package_guid, $movabl_type, $movabl_guid) {
 
-        $package = self::get_movabl('package', $package_guid);
-        foreach ($package['contents'] as $key => $movabl) {
-            if ($movabl['movabl_type'] == $movabl_type && $movabl['movabl_GUID'] == $movabl_guid) {
-                unset($package['contents'][$key]);
-                $package['contents'] = array_values($package['contents']);
-                self::set_movabl('package',$package);
-                break;
-            }
-        }
-        return true;
+        if (!in_array(1,$GLOBALS->_USER['groups']))
+            throw new Exception('Only administrators can add Movabls to a package',500);
 
+        Movabls_Data::data_query("DELETE FROM mvs_packages WHERE mvs_packages.package_GUID = '$package_guid' AND mvs_packages.movabls_type = '$movabl_type' AND mvs_packages.movabls_GUID = '$movabl_guid';");
+        return true;
     }
 
 
@@ -125,21 +64,39 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
 
         global $mvs_db;
 
+        if ($movabl_type === 'package'):
 
+            $result = Movabls_Data::data_query("SELECT movabls_GUID, movabls_type FROM  mvs_packages WHERE package_GUID = '$movabl_guid'");
+
+            if (empty($result))
+                throw new Exception ("Movabl ($movabl_type: $movabl_guid) not found",500);
+            $count = 0;
+            $movabl = Array();
+            while($row = $result->fetch_assoc()):
+                $movabl[$count]["movabl_type"]=$row['movabls_type'];
+                $movabl[$count]["movabl_GUID"]=$row['movabls_GUID'];
+                $count++;
+           endwhile;
+        
+            $meta = self::get_meta($movabl_type,$movabl_guid);
+            $movabl['meta'] = isset($meta[$movabl_guid]) ? $meta[$movabl_guid] : array();
+            return $movabl;
+        endif;
+        
         $movabl_type = $mvs_db->real_escape_string($movabl_type);
         $movabl_guid = $mvs_db->real_escape_string($movabl_guid);
 
         $table = self::table_name($movabl_type);
             
-        $result = Movabls_Data::data_query("SELECT x.* FROM `mvs_$table` AS x WHERE x.{$movabl_type}_GUID = '$movabl_guid'");
+        $movabl = Movabls_Data::data_query("SELECT x.* FROM `mvs_$table` AS x WHERE x.{$movabl_type}_GUID = '$movabl_guid'", DATA_ARRAY);
 
-        if (empty($result))
+       /* if (empty($result))
             throw new Exception ("Movabl ($movabl_type: $movabl_guid) not found",500);
 
         $movabl = $result->fetch_assoc();
             
         $result->free();
-
+*/
         $meta = self::get_meta($movabl_type,$movabl_guid);
         $movabl['meta'] = isset($meta[$movabl_guid]) ? $meta[$movabl_guid] : array();
 
@@ -152,9 +109,6 @@ if ($package_guid!="")      self::set_movabl('package',$package, $package_guid);
                     foreach ($movabl['content'] as $tag => $value)
                         $movabl['content'][$tag]['meta'] = isset($tagmeta[$movabl_guid][$tag]) ? $tagmeta[$movabl_guid][$tag] : array();
                 }
-                break;
-            case 'package':
-                $movabl['contents'] = json_decode($movabl['contents'],true);
                 break;
             case 'media':
             case 'function':
@@ -1124,5 +1078,75 @@ $join = '';
 //echo $group;
 return " $where $group";
     }
+    
+    
+    
+    
+    /**
+     * Gets a list of all packages on the site
+     * @return array 
+     */
+    public static function get_packages() {
+
+        global $mvs_db;
+
+       // $permissions = self::join_permissions('package');
+
+        $result = Movabls_Data::data_query("SELECT package_id, package_GUID, contents FROM `mvs_packages`");
+        if(empty($result))
+            return array();
+
+        while ($row = $result->fetch_assoc()) {
+            $ids[] = $row['package_GUID'];
+            $packages[$row['package_GUID']] = $row;
+            $packages[$row['package_GUID']]['meta'] = array();
+        }
+
+        $result->free();
+
+        $package_meta = self::get_meta('package',$ids);
+
+        foreach ($package_meta as $guid => $meta)
+            $packages[$guid]['meta'] = $meta;
+
+        $package_content_ids=Array();
+        $full_meta=Array();
+        foreach($packages as $guid => $package):
+            $package_contents=json_decode($package["contents"],TRUE);
+            foreach($package_contents as $movabl):
+                $package_content_ids[$movabl["movabl_type"]][]=$movabl["movabl_GUID"];
+                $packages[$guid]["movabls"][$movabl["movabl_type"]][$movabl["movabl_GUID"]]=Array();
+            endforeach;
+        endforeach;
+     
+     foreach($package_content_ids as $type=>$content_ids)
+          $full_meta = array_merge($full_meta, self::get_meta($type,$content_ids));
+   //  print_r($full_meta);
+//endforeach;
+//     die();
+        foreach($packages as $guid => $package): 
+        
+            if(isset($package["meta"]["label"]) && !empty($package["meta"]["label"]))
+                $packages[$guid]["name"]=$package["meta"]["label"];
+            
+            foreach($packages[$guid]["movabls"] as $type=>$movabls_by_type):
+                foreach($movabls_by_type as $movabl_guid=>$movabl):
+                    if(isset($full_meta[$movabl_guid]) && !empty($full_meta[$movabl_guid])) 
+                            $packages[$guid]["movabls"][$type][$movabl_guid]["meta"]=$full_meta[$movabl_guid];
+                    if(isset($packages[$guid]["movabls"][$type][$movabl_guid]["meta"]["label"]) && !empty($packages[$guid]["movabls"][$type][$movabl_guid]["meta"]["label"]))
+                        $packages[$guid]["movabls"][$type][$movabl_guid]["name"]=$packages[$guid]["movabls"][$type][$movabl_guid]["meta"]["label"];
+                endforeach;
+            endforeach;
+        endforeach;
+        
+        return $packages;
+
+    }
+
+    
+    
+    
+    
+    
     
 }

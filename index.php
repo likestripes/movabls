@@ -43,6 +43,7 @@ try{
 	Movabls_Session::get_session();
 	$GLOBALS = new Movabls_Globals();
 
+
     //Movabls_Permissions::set_permission("11","sadfsad");
     //Movabls_Permissions::check_permission("11","sadfsad");
     
