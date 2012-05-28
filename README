@@ -3,9 +3,9 @@
 
 	///
 
-	Works with AWS, sorta.  Now:
+	Works with AWS.  Now:
 
-	- simplify db connections, add caching
-	- rebuild basic place-based permissions
-	- clean up database, provide reference install
-	- clean up ///.  time to go tab-less.
+        Documentation!
+        Examples
+        Front End Stuffs
+        Making.
