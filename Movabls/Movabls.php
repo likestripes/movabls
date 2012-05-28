@@ -93,6 +93,17 @@ class Movabls {
         $meta = self::get_meta($movabl_type,$movabl_guid);
         $movabl['meta'] = isset($meta[$movabl_guid]) ? $meta[$movabl_guid] : array();
 
+        switch ($movabl_type) {
+            case 'interface':
+                $movabl['content'] = json_decode($movabl['content'],true);
+                break;
+            case 'media':
+            case 'function':
+                $inputs = json_decode($movabl['inputs'],true);
+                if(is_array($inputs)) $movabl['inputs'] = $inputs;
+                else $movabl['inputs'] = array();
+                break;
+        }
         return $movabl;
 	
     }
