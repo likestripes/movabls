@@ -100,12 +100,12 @@ class Movabls {
             case 'media':
             case 'function':
                 $inputs = json_decode($movabl['inputs'],true);
-                if(is_array($inputs)) $movabl['inputs'] = $inputs;
+                if(is_array($inputs) && !empty($inputs) ) $movabl['inputs'] = array_flip($inputs);
                 else $movabl['inputs'] = array();
                 break;
         }
+
         return $movabl;
-	
     }
 
     /**
