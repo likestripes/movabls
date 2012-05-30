@@ -330,7 +330,7 @@ class Movabls {
         $sanitized_type = $mvs_db->real_escape_string($movabl_type);
 
         foreach ($sanitized_meta as $k => $v)
-               Movabls_Data::data_query("REPLACE INTO `mvs_meta` (`movabls_GUID`,`movabls_type`,`tag_name`,`key`,`value`) VALUES ('$sanitized_guid','$sanitized_type',NULL,'$k','$v')");
+               Movabls_Data::data_query("REPLACE INTO `mvs_meta` (`movabls_GUID`,`movabls_type`,`key`,`value`) VALUES ('$sanitized_guid','$sanitized_type','$k','$v')");
 
            
         return true;
